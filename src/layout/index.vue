@@ -2,6 +2,7 @@
 import {} from 'vue'
 import SideBar from './components/side-bar/index.vue'
 import AppHeader from './components/app-header/index.vue'
+import AppMain from './components/app-main/index.vue'
 </script>
 
 <template>
@@ -9,24 +10,22 @@ import AppHeader from './components/app-header/index.vue'
     <el-container direction="horizontal">
       <el-aside width="200px">
         <!-- Aside content -->
-        <SideBar />
+        <side-bar />
       </el-aside>
-      <el-container direction="vertical">
-        <el-header height="">
+      <el-container direction="vertical" class="bg-gray-100">
+        <el-header height="auto" class="bg-white shadow-md">
           <!-- Header content -->
-          <AppHeader />
+          <app-header />
         </el-header>
-
-        <el-main height="">
+        <el-main class="p-2">
           <!-- Main content -->
-          main
-          <router-view></router-view>
+          <app-main />
         </el-main>
       </el-container>
     </el-container>
-    <el-footer height="">
-      <!-- Footer content -->
-      footer
-    </el-footer>
+    <!-- <el-footer> -->
+    <!-- Footer content -->
+    <!-- footer -->
+    <!-- </el-footer> -->
   </el-container>
 </template>

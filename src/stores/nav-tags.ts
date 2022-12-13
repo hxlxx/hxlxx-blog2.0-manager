@@ -9,7 +9,7 @@ export const useNavTags = defineStore('navTags', {
   },
   actions: {
     initNavTag() {
-      this.navTags[0] = { id: 1, tag_name: '首页', path: '/', active: true }
+      this.navTags = [{ id: 1, tag_name: '首页', path: '/', active: true }]
     },
     setNavTag(tag: NavTag) {
       // 将所有 tag.active 置为 false，然后将当前 tag.active 置为 true

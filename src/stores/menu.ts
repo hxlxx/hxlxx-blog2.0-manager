@@ -24,6 +24,12 @@ const menuList: Menu[] = [
     title: '用户管理',
     icon: 'manager',
     subMenu: [{ id: 8, title: '用户列表', icon: 'user', path: '/user' }]
+  },
+  {
+    id: 9,
+    title: '用户中心',
+    icon: 'user',
+    path: '/user-center'
   }
 ]
 

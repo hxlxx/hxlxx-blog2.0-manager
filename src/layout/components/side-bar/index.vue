@@ -2,7 +2,7 @@
 import { useMenuList } from '@/stores/menu'
 import { useNavTags } from '@/stores/nav-tags'
 import type { Menu } from '@/types/store/menu'
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const menuList = ref<Menu[]>([])
@@ -15,7 +15,7 @@ const activePath = computed(() => {
   return route.meta.activePath ? route.meta.activePath : route.path
 })
 
-onMounted(() => {
+onBeforeMount(() => {
   menuListStore.getMenuList()
   navTagStore.initNavTag()
 })

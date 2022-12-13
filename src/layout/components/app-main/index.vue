@@ -3,5 +3,7 @@ import {} from 'vue'
 </script>
 
 <template>
-  <div class=""></div>
+  <el-card class="box-card h-full" shadow="hover" body-style="height: 100%;">
+    <router-view></router-view>
+  </el-card>
 </template>
