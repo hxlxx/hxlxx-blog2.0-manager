@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { useMenuList } from '@/stores/menu'
-import { useNavTags } from '@/stores/nav-tags'
-import type { Menu } from '@/types/store/menu'
+import type { Menu } from '@/types'
 import { ref, watch, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const menuList = ref<Menu[]>([])
 
 const route = useRoute()
-const navTagStore = useNavTags()
 const menuListStore = useMenuList()
 
 const activePath = computed(() => {
@@ -17,7 +15,6 @@ const activePath = computed(() => {
 
 onBeforeMount(() => {
   menuListStore.getMenuList()
-  navTagStore.initNavTag()
 })
 
 watch(
@@ -26,11 +23,6 @@ watch(
     newVal.length && (menuList.value = newVal)
   }
 )
-
-const handleClickMenuItem = ({ id, title, path }: Menu) => {
-  const tag = { id, tag_name: title, path: path as string, active: true }
-  navTagStore.setNavTag(tag)
-}
 </script>
 
 <template>
@@ -51,18 +43,12 @@ const handleClickMenuItem = ({ id, title, path }: Menu) => {
             :key="subMenu.id"
             :index="subMenu.path"
             :route="subMenu.path"
-            @click="handleClickMenuItem(subMenu)"
           >
             <i :class="['iconfont', `icon-${subMenu.icon}`, 'mx-1']"></i>
             {{ subMenu.title }}
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item
-          v-else
-          :index="menu.path"
-          :route="menu.path"
-          @click="handleClickMenuItem(menu)"
-        >
+        <el-menu-item v-else :index="menu.path" :route="menu.path">
           <i :class="['iconfont', `icon-${menu.icon}`, 'mx-1']"></i>
           {{ menu.title }}
         </el-menu-item>

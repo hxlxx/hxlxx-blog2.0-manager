@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
-import type { UploadFile } from 'element-plus'
+import type { UploadFile, UploadInstance } from 'element-plus'
 import { Delete, Plus, ZoomIn } from '@element-plus/icons-vue'
 import {
   ARTICLE_TYPE,
-  type AddArticleForm,
+  type Article,
   type ArticleTag,
   type ArticleCategory
-} from '@/types/views/article-manager/article-add'
+} from '@/types'
 import { Message } from '@/utils'
+import { addArticle } from '@/api'
+import CategorySelector from './components/category-selector.vue'
+import { useRoute } from 'vue-router'
+import { useArticle } from '@/stores'
 
+const route = useRoute()
+const articleStore = useArticle()
+
+const uploadRef = ref<UploadInstance>()
 const articleTypes = [
   {
     value: 'original',
@@ -60,19 +68,38 @@ const categories = ref<ArticleCategory[]>([
 const articleDialogVisible = ref<boolean>(false)
 const previewImageUrl = ref<string>('')
 const imgPreviewDialogVisible = ref<boolean>(false)
+const fileList = ref<UploadFile[]>([])
 const formInitial = () => ({
+  author_id: 1,
   title: '',
   content: '',
   description: '',
-  category: null as any,
-  tags: [],
-  file_list: [],
+  category_id: 0,
+  tag_ids: [],
+  cover_url: '',
   article_type: ARTICLE_TYPE.ORIGINAL,
+  status: false,
   top: false,
   recommend: false,
-  privacy: 0
+  privacy: false
 })
-const articleForm = reactive<AddArticleForm>(formInitial())
+const articleForm = reactive<Article>(formInitial())
+
+watch(
+  () => route.params.id,
+  (newVal) => {
+    if (newVal) {
+      const article = articleStore.getArticle()
+      Object.assign(articleForm, article)
+      fileList.value.push({ url: article.cover_url } as any)
+    } else {
+      Object.assign(articleForm, formInitial())
+    }
+  },
+  {
+    immediate: true
+  }
+)
 
 // 发布文章
 const handlePublishArticle = () => {
@@ -98,15 +125,37 @@ const beforeCloseDialog = () => {
 const handleOpenDialog = () => {
   articleForm.description = articleForm.content.slice(0, 100)
 }
+// 图片上传成功，并上传文章
+const handleCoverSuccess = async (response: any) => {
+  articleForm.cover_url = response.data
+  if (!articleForm.cover_url) {
+    return Message({
+      type: 'error',
+      message: '封面上传错误，请重新上传'
+    })
+  }
+  const article = toRaw(articleForm)
+  const { code } = await addArticle({ data: article })
+  if (code === 200) {
+    Message({
+      type: 'success',
+      message: '发布成功！'
+    })
+    handleResetForm()
+    articleForm.title = ''
+    articleForm.content = ''
+  }
+  articleDialogVisible.value = false
+}
 // 提交文章
-const handleDialogSubmit = () => {
-  if (!articleForm.category) {
+const handleSubmitArticle = () => {
+  if (!articleForm.category_id) {
     return Message({
       type: 'error',
       message: '请选择文章分类'
     })
   }
-  if (!articleForm.tags.length) {
+  if (!articleForm.tag_ids.length) {
     return Message({
       type: 'error',
       message: '请添加文章标签'
@@ -124,14 +173,28 @@ const handleDialogSubmit = () => {
       message: '文章摘要不满足要求'
     })
   }
-  if (!articleForm.file_list.length) {
+  articleForm.status = true
+  uploadRef.value!.submit()
+}
+// 存为草稿
+const handleSaveAsDraft = async () => {
+  if (!articleForm.title) {
     return Message({
       type: 'error',
-      message: '请选择文章封面'
+      message: '草稿请至少填写标题'
     })
   }
-  articleDialogVisible.value = false
-  console.log(articleForm)
+  const article = toRaw(articleForm)
+  const { data } = await addArticle({ data: article })
+  if (Object.keys(data).length > 0) {
+    Message({
+      type: 'success',
+      message: '保存草稿成功！'
+    })
+    handleResetForm()
+    articleForm.title = ''
+    articleForm.content = ''
+  }
 }
 // 重置表单
 const handleResetForm = () => {
@@ -139,24 +202,15 @@ const handleResetForm = () => {
   const { title, content, ...rest } = formInitial()
   Object.assign(articleForm, rest)
 }
-// 删除文件
-const handleRemoveFile = () => {
-  articleForm.file_list = []
-}
 // 图片预览
 const handlePictureCardPreview = (file: UploadFile) => {
   previewImageUrl.value = file.url!
   imgPreviewDialogVisible.value = true
 }
-// 选择分类
-const handleSelectCategory = (category: ArticleCategory) => {
-  const isExist = articleForm.category?.id === category.id
-  if (isExist) return
-  articleForm.category = category
-}
-// 删除分类
-const handleRemoveCategory = () => {
-  articleForm.category = null as any
+// 删除文件
+const handleRemoveFile = () => {
+  articleForm.cover_url = ''
+  fileList.value = []
 }
 </script>
 
@@ -167,7 +221,9 @@ const handleRemoveCategory = () => {
         v-model="articleForm.title"
         placeholder="请输入文章标题"
       ></el-input>
-      <el-button type="primary" class="ml-4">存为草稿</el-button>
+      <el-button type="primary" class="ml-4" @click="handleSaveAsDraft"
+        >存为草稿</el-button
+      >
       <el-button @click="handlePublishArticle">发布</el-button>
     </div>
     <MdEditor
@@ -187,47 +243,14 @@ const handleRemoveCategory = () => {
   >
     <el-form :model="articleForm" label-width="80px">
       <el-form-item label="文章分类">
-        <div class="flex gap-3 mr-3" v-if="articleForm.category">
-          <el-tag
-            class="text-sm"
-            size="large"
-            closable
-            @close="handleRemoveCategory"
-          >
-            {{ articleForm.category.category_name }}
-          </el-tag>
-        </div>
-        <el-popover
-          placement="bottom-start"
-          trigger="click"
-          :width="360"
-          :hide-after="0"
-          v-if="!articleForm.category"
-        >
-          <el-card shadow="never" class="border-0">
-            <template #header>
-              <span>请选择分类</span>
-            </template>
-            <div class="flex gap-3">
-              <el-tag
-                size="large"
-                class="text-sm cursor-pointer"
-                v-for="category in categories"
-                :key="category.id"
-                @click="handleSelectCategory(category)"
-              >
-                {{ category.category_name }}
-              </el-tag>
-            </div>
-          </el-card>
-          <template #reference>
-            <el-button type="primary" plain> 选择分类 </el-button>
-          </template>
-        </el-popover>
+        <category-selector
+          v-model="articleForm.category_id"
+          :categories="categories"
+        />
       </el-form-item>
       <el-form-item label="文章标签">
         <el-select
-          v-model="articleForm.tags"
+          v-model="articleForm.tag_ids"
           style="width: 200px"
           multiple
           filterable
@@ -285,12 +308,13 @@ const handleRemoveCategory = () => {
       </el-form-item>
       <el-form-item label="文章封面">
         <el-upload
-          action="#"
+          ref="uploadRef"
+          action="/api/article/cover"
           list-type="picture-card"
-          v-model:file-list="articleForm.file_list"
-          :auto-upload="false"
+          v-model:file-list="fileList"
           :limit="1"
-          :disabled="articleForm.file_list.length > 0"
+          :auto-upload="false"
+          :on-success="handleCoverSuccess"
         >
           <el-icon><Plus /></el-icon>
           <template #file="{ file }">
@@ -324,21 +348,21 @@ const handleRemoveCategory = () => {
       <el-form-item label="置顶">
         <el-switch
           v-model="articleForm.top"
-          :active-value="1"
-          :inactive-value="0"
+          :active-value="true"
+          :inactive-value="false"
         />
       </el-form-item>
       <el-form-item label="推荐">
         <el-switch
           v-model="articleForm.recommend"
-          :active-value="1"
-          :inactive-value="0"
+          :active-value="true"
+          :inactive-value="false"
         />
       </el-form-item>
       <el-form-item label="发布形式">
         <el-radio-group class="ml-4" v-model="articleForm.privacy">
-          <el-radio :label="0">私密</el-radio>
-          <el-radio :label="1">公开</el-radio>
+          <el-radio :label="false">公开</el-radio>
+          <el-radio :label="true">私密</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -348,7 +372,7 @@ const handleRemoveCategory = () => {
           关闭
         </el-button>
         <el-button type="info" @click="handleResetForm">重置</el-button>
-        <el-button type="primary" @click="handleDialogSubmit"> 提交 </el-button>
+        <el-button type="primary" @click="handleSubmitArticle">提交</el-button>
       </span>
     </template>
   </el-dialog>

@@ -1,13 +1,12 @@
-import type { UploadFile } from 'element-plus'
-
 export enum ARTICLE_TYPE {
   ORIGINAL = 'original',
   REPRODUCE = 'reproduce',
   TRANSLATE = 'translate'
 }
-export enum ARTICLE_PRIVACY {
-  PUBLIC,
-  PRIVATE
+
+export enum ARTICLE_STATUS {
+  DRAFT = 'draft',
+  PUBLISHED = 'published'
 }
 
 export type ArticleTag = {
@@ -20,15 +19,18 @@ export type ArticleCategory = {
   category_name: string
 }
 
-export type AddArticleForm = {
+export type Article = {
+  id?: number
+  author_id: number
   title: string
   content: string
   description: string
-  category: ArticleCategory
-  tags: ArticleTag[]
-  file_list: UploadFile[]
+  category_id: number
+  tag_ids: number[]
+  cover_url: string
   article_type: ARTICLE_TYPE
+  status: boolean
   top: boolean
   recommend: boolean
-  privacy: ARTICLE_PRIVACY
+  privacy: boolean
 }

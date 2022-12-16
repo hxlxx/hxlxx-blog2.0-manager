@@ -2,11 +2,11 @@
 import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
-import { login } from '@/api/user/login'
+import { login } from '@/api'
 import { Loading, setToken } from '@/utils'
 import router from '@/router'
 import { Message } from '@/utils'
-import type { LoginInfo } from '@/types/views/login'
+import type { LoginInfo } from '@/types'
 
 const loginRuleForm = reactive<LoginInfo>({
   username: '',
@@ -57,7 +57,7 @@ const handleLogin = async () => {
       message: '请输入验证码！'
     })
   }
-  const res = await login('/api/login', { data: loginRuleForm })
+  const res = await login({ data: loginRuleForm })
   if (res?.data) {
     setToken(res.data.access_token)
     const loading = Loading({
@@ -80,11 +80,7 @@ const handleChangeCaptcha = () => {
 <template>
   <div class="flex h-screen">
     <div class="flex-1 h-[100%] flex justify-center items-center">
-      <span
-        class="text-5xl"
-        @click="Message({ type: 'success', message: 'chenggongle' })"
-        >MANAGER</span
-      >
+      <span class="text-5xl">MANAGER</span>
     </div>
     <div class="w-[600px] h-[100%] flex flex-col justify-center items-center">
       <el-form

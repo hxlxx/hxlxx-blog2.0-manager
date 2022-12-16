@@ -10,6 +10,7 @@ specifiers:
   '@vue/tsconfig': ^0.1.3
   autoprefixer: ^10.4.13
   axios: ^1.2.1
+  dayjs: ^1.11.7
   element-plus: ^2.2.26
   eslint: ^8.22.0
   eslint-plugin-vue: ^9.3.0
@@ -31,6 +32,7 @@ specifiers:
 dependencies:
   '@element-plus/icons-vue': 2.0.10_vue@3.2.45
   axios: 1.2.1
+  dayjs: 1.11.7
   element-plus: 2.2.26_vue@3.2.45
   md-editor-v3: 2.6.0
   pinia: 2.0.27_e7lp6ggkpgyi5vqd44m2kxvk6i

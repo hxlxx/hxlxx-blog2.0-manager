@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Message } from './message'
+import type { ResponseData } from '@/types'
 
 class HttpRequest {
   baseURL: string
@@ -64,11 +65,14 @@ class HttpRequest {
     return instance(config)
   }
 
-  get(url: string, { params, ...options }: any) {
+  baseRequest(
+    url: string,
+    method: string,
+    options?: AxiosRequestConfig
+  ): Promise<ResponseData> {
     return this.request({
       url,
-      method: 'GET',
-      params,
+      method,
       ...options
     })
       .then((res) => Promise.resolve(res))
@@ -77,55 +81,23 @@ class HttpRequest {
           type: 'error',
           message: error.data.message
         })
-      })
+      }) as unknown as Promise<ResponseData>
   }
 
-  post(url: string, { data, ...options }: any) {
-    return this.request({
-      url,
-      method: 'POST',
-      data,
-      ...options
-    })
-      .then((res) => Promise.resolve(res))
-      .catch((error) => {
-        Message({
-          type: 'error',
-          message: error.data.message
-        })
-      })
+  get(url: string, options?: AxiosRequestConfig) {
+    return this.baseRequest(url, 'GET', options)
   }
 
-  patch(url: string, { data, ...options }: any) {
-    return this.request({
-      url,
-      method: 'PUT',
-      data,
-      ...options
-    })
-      .then((res) => Promise.resolve(res))
-      .catch((error) => {
-        Message({
-          type: 'error',
-          message: error.data.message
-        })
-      })
+  post(url: string, options: AxiosRequestConfig) {
+    return this.baseRequest(url, 'POST', options)
   }
 
-  delete(url: string, { params, ...options }: any) {
-    return this.request({
-      url,
-      method: 'DELETE',
-      params,
-      ...options
-    })
-      .then((res) => Promise.resolve(res))
-      .catch((error) => {
-        Message({
-          type: 'error',
-          message: error.data.message
-        })
-      })
+  patch(url: string, options: AxiosRequestConfig) {
+    return this.baseRequest(url, 'PATCH', options)
+  }
+
+  delete(url: string, options?: AxiosRequestConfig) {
+    return this.baseRequest(url, 'DELETE', options)
   }
 }
 

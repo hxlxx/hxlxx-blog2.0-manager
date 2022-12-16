@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useNavTags } from '@/stores/nav-tags'
-import type { NavTag } from '@/types/store/nav-tags'
+import { useNavTags } from '@/stores'
+import type { NavTag } from '@/types'
 import { clearToken } from '@/utils'
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onBeforeMount } from 'vue'
 import { useRouter, useRoute, type RouteRecord } from 'vue-router'
 
 const navTagStore = useNavTags()
@@ -12,8 +12,9 @@ const route = useRoute()
 const tags = ref<NavTag[]>([])
 const breadcrumbs = ref<RouteRecord[]>([])
 
-onMounted(() => {
+onBeforeMount(() => {
   tags.value = navTagStore.navTags
+  navTagStore.initNavTag()
 })
 
 watch(
@@ -30,11 +31,13 @@ watch(
     } else {
       breadcrumbs.value = []
     }
+    const tag = { tag_name: route.meta.title!, path: route.path, active: true }
+    navTagStore.setNavTag(tag)
   }
 )
 // 关闭标签
 const handleCloseTag = (tag: NavTag, index: number) => {
-  navTagStore.removeNavTag(tag.id, tag.active)
+  navTagStore.removeNavTag(tag.path, tag.active)
   if (tag.active && index > 0) {
     const path = tags.value[index - 1].path
     router.push({ path })
@@ -42,7 +45,7 @@ const handleCloseTag = (tag: NavTag, index: number) => {
 }
 // 点击标签，切换路由
 const handleClickTag = (tag: NavTag) => {
-  navTagStore.setCurrentNavTag(tag.id)
+  navTagStore.setCurrentNavTag(tag.path)
   router.push({ path: tag.path })
 }
 // 关闭所有标签
@@ -98,7 +101,7 @@ const handleLogout = () => {
       effect="dark"
       :closable="index > 0"
       v-for="(tag, index) in tags"
-      :key="tag.id"
+      :key="tag.path"
       @close="handleCloseTag(tag, index)"
       @click="handleClickTag(tag)"
     >

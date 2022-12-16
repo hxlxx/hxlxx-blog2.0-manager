@@ -44,6 +44,12 @@ export const routes = [
         meta: { title: '发布文章', activePath: '/article' }
       },
       {
+        path: ':id',
+        name: 'edit-article',
+        component: () => import('@/views/article-manager/index.vue'),
+        meta: { title: '编辑文章' }
+      },
+      {
         path: 'list',
         name: 'list',
         component: () => import('@/views/article-manager/article-list.vue'),
@@ -60,7 +66,7 @@ export const routes = [
         path: 'tags',
         name: 'tags',
         component: () => import('@/views/article-manager/article-tags.vue'),
-        meta: { title: '标签管理', activePath: 'tags' }
+        meta: { title: '标签管理', activePath: '/tags' }
       }
     ]
   },
@@ -74,7 +80,7 @@ export const routes = [
         path: 'index',
         name: 'user-list',
         component: () => import('@/views/user/index.vue'),
-        meta: { title: '', activePath: '' }
+        meta: { title: '用户列表', activePath: '/user' }
       }
     ]
   }

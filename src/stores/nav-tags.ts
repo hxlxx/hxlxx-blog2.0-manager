@@ -9,30 +9,30 @@ export const useNavTags = defineStore('navTags', {
   },
   actions: {
     initNavTag() {
-      this.navTags = [{ id: 1, tag_name: '首页', path: '/', active: true }]
+      this.navTags = [{ tag_name: '首页', path: '/home', active: true }]
     },
     setNavTag(tag: NavTag) {
       // 将所有 tag.active 置为 false，然后将当前 tag.active 置为 true
       this.navTags.forEach((tag) => (tag.active = false))
-      const index = this.navTags.findIndex((_tag) => _tag.id === tag.id)
+      const index = this.navTags.findIndex((_tag) => _tag.path === tag.path)
       if (index >= 0) {
         this.navTags[index].active = true
       } else {
         this.navTags = [...this.navTags, tag]
       }
     },
-    setCurrentNavTag(id: number) {
+    setCurrentNavTag(path: string) {
       this.navTags.forEach((tag) => (tag.active = false))
-      const index = this.navTags.findIndex((_tag) => _tag.id === id)
+      const index = this.navTags.findIndex((_tag) => _tag.path === path)
       this.navTags[index].active = true
     },
-    removeNavTag(id: number, isCurrent: boolean) {
+    removeNavTag(path: string, isCurrent: boolean) {
       // 移除 tag 时需要判断当前 tag.active 是否为 true，为 true 则将当前 tag 前一个 tag.active 置为 true
-      const index = this.navTags.findIndex((tag) => tag.id === id)
+      const index = this.navTags.findIndex((tag) => tag.path === path)
       if (index > 0 && isCurrent) {
         this.navTags[index - 1].active = true
       }
-      this.navTags = this.navTags.filter((tag) => tag.id !== id)
+      this.navTags = this.navTags.filter((tag) => tag.path !== path)
     }
   }
 })
