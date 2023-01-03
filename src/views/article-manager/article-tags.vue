@@ -23,7 +23,7 @@ onBeforeMount(() => {
 })
 // 初始化分类列表
 const initTagList = async () => {
-  const { data } = await getTagList()
+  const { data } = (await getTagList()) || {}
   tagList.value = data.res
 }
 // 添加分类
@@ -79,80 +79,84 @@ const handleConfirm = async (id: number) => {
 </script>
 
 <template>
-  <div class="w-80 flex mb-3">
-    <el-input placeholder="请输入标签名称" v-model="tagName" />
-    <el-button
-      type="primary"
-      class="ml-3"
-      :disabled="!tagName.length"
-      @click="handleAddCategory"
+  <div>
+    <div class="w-80 flex mb-3">
+      <el-input placeholder="请输入标签名称" v-model="tagName" />
+      <el-button
+        type="primary"
+        class="ml-3"
+        :disabled="!tagName.length"
+        @click="handleAddCategory"
+      >
+        <el-icon><Plus /></el-icon>
+        <span>添加标签</span>
+      </el-button>
+    </div>
+    <el-table
+      border
+      :data="tagList"
+      :header-cell-style="{
+        color: '#606266',
+        'text-align': 'center'
+      }"
+      :cell-style="{ 'text-align': 'center' }"
     >
-      <el-icon><Plus /></el-icon>
-      <span>添加标签</span>
-    </el-button>
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="标签名称">
+        <template #default="{ row }">
+          <el-tag class="text-sm" type="success" size="large">
+            {{ row.tag_name }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作">
+        <template #default="{ row }">
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleOpenDialog(row.id)"
+          >
+            编辑
+          </el-button>
+          <el-popconfirm
+            title="是否确认删除？"
+            confirm-button-text="确认"
+            cancel-button-text="取消"
+            confirm-button-type="danger"
+            cancel-button-type="info"
+            @confirm="handleConfirm(row.id)"
+            @cancel="Message({ type: 'info', message: '取消删除' })"
+          >
+            <template #reference>
+              <el-button type="danger" size="small">删除</el-button>
+            </template>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-dialog
+      v-model="dialogVisible"
+      title="编辑标签"
+      width="30%"
+      :before-close="handleCloseDialog"
+    >
+      <el-form label-width="80px">
+        <el-form-item label="文章标签">
+          <el-input v-model="tag.tag_name" @input="handleInput" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button
+            type="primary"
+            @click="handleSubmitTag"
+            :disabled="!isChanged"
+          >
+            确认修改
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
-  <el-table
-    border
-    :data="tagList"
-    :header-cell-style="{
-      color: '#606266',
-      'text-align': 'center'
-    }"
-    :cell-style="{ 'text-align': 'center' }"
-  >
-    <el-table-column type="selection" width="55" />
-    <el-table-column label="标签名称">
-      <template #default="{ row }">
-        <el-tag size="large" class="text-sm">{{ row.tag_name }}</el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column label="操作">
-      <template #default="{ row }">
-        <el-button
-          type="primary"
-          size="small"
-          @click="handleOpenDialog(row.id)"
-        >
-          编辑
-        </el-button>
-        <el-popconfirm
-          title="是否确认删除？"
-          confirm-button-text="确认"
-          cancel-button-text="取消"
-          confirm-button-type="danger"
-          cancel-button-type="info"
-          @confirm="handleConfirm(row.id)"
-          @cancel="Message({ type: 'info', message: '取消删除' })"
-        >
-          <template #reference>
-            <el-button type="danger" size="small">删除</el-button>
-          </template>
-        </el-popconfirm>
-      </template>
-    </el-table-column>
-  </el-table>
-  <el-dialog
-    v-model="dialogVisible"
-    title="编辑标签"
-    width="30%"
-    :before-close="handleCloseDialog"
-  >
-    <el-form label-width="80px">
-      <el-form-item label="文章标签">
-        <el-input v-model="tag.tag_name" @input="handleInput" />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          @click="handleSubmitTag"
-          :disabled="!isChanged"
-        >
-          确认修改
-        </el-button>
-      </span>
-    </template>
-  </el-dialog>
 </template>

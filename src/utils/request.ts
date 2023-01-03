@@ -1,7 +1,9 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
-import { Message } from './message'
+import { Message, MessageBox } from './message'
 import type { ResponseData } from '@/types'
+import { clearToken, getToken } from '@/utils'
+import router from '@/router'
 
 class HttpRequest {
   baseURL: string
@@ -9,19 +11,21 @@ class HttpRequest {
   queue: {
     [index: string]: boolean
   }
+  flag: boolean
   constructor() {
     this.baseURL =
       import.meta.env.MODE === 'production' ? import.meta.env.BASE_URL : ''
     this.timeout = 3000
     // 正在进行请求的请求列表
     this.queue = {}
+    this.flag = true
   }
 
   setInterceptors(instance: AxiosInstance, url: string) {
     instance.interceptors.request.use((config: AxiosRequestConfig) => {
-      // if (url.indexOf('/api') !== -1) {
-
-      // }
+      if (url.indexOf('login') === -1) {
+        config.headers!['Authorization'] = getToken()
+      }
 
       if (!Object.keys(this.queue).length) {
         // 此处开启 loading
@@ -75,12 +79,29 @@ class HttpRequest {
       method,
       ...options
     })
-      .then((res) => Promise.resolve(res))
+      .then((res) => {
+        return Promise.resolve(res)
+      })
       .catch((error) => {
-        Message({
-          type: 'error',
-          message: error.data.message
-        })
+        if (error.data.code === 401) {
+          if (this.flag) {
+            this.flag = false
+            MessageBox({
+              type: 'error',
+              message: '身份已过期，请重新登录！',
+              callback: () => {
+                clearToken()
+                router.push({ path: '/login' })
+                this.flag = true
+              }
+            })
+          }
+        } else {
+          Message({
+            type: 'error',
+            message: error?.data?.message || error
+          })
+        }
       }) as unknown as Promise<ResponseData>
   }
 

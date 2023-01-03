@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 export const useNavTags = defineStore('navTags', {
   state: (): NavTagState => {
     return {
-      navTags: []
+      navTags: [{ tag_name: '首页', path: '/home', active: true }]
     }
   },
   actions: {
@@ -34,5 +34,8 @@ export const useNavTags = defineStore('navTags', {
       }
       this.navTags = this.navTags.filter((tag) => tag.path !== path)
     }
+  },
+  persist: {
+    storage: sessionStorage
   }
 })

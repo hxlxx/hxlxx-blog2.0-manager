@@ -14,9 +14,11 @@ specifiers:
   element-plus: ^2.2.26
   eslint: ^8.22.0
   eslint-plugin-vue: ^9.3.0
+  lottie-web: ^5.10.0
   md-editor-v3: ^2.6.0
   npm-run-all: ^4.1.5
   pinia: ^2.0.26
+  pinia-plugin-persistedstate: ^3.0.1
   postcss: ^8.4.19
   prettier: ^2.7.1
   tailwindcss: ^3.2.4
@@ -34,8 +36,10 @@ dependencies:
   axios: 1.2.1
   dayjs: 1.11.7
   element-plus: 2.2.26_vue@3.2.45
+  lottie-web: 5.10.0
   md-editor-v3: 2.6.0
   pinia: 2.0.27_e7lp6ggkpgyi5vqd44m2kxvk6i
+  pinia-plugin-persistedstate: 3.0.1_pinia@2.0.27
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
 
@@ -1937,6 +1941,10 @@ packages:
   /lodash/4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
+  /lottie-web/5.10.0:
+    resolution: {integrity: sha512-q2hfqKrGXNkwjSSZjKxf3fWMi0e3ZBc03qBkVWoGbwUJ7BcG+9YXjMPtmmhitzk8Nc6VQ5PRnh9yInPdfq0PZg==}
+    dev: false
+
   /lru-cache/6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
@@ -2252,6 +2260,14 @@ packages:
     resolution: {integrity: sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg==}
     engines: {node: '>=4'}
     dev: true
+
+  /pinia-plugin-persistedstate/3.0.1_pinia@2.0.27:
+    resolution: {integrity: sha512-WRNWtR4v8StJqBQH+Qiz88SGnlr4wvEyh7wtA+fYEVLoIOnpZ0v4FICvUcC8eUkAIvQL3n6/Ew2yryw7okazvA==}
+    peerDependencies:
+      pinia: ^2.0.0
+    dependencies:
+      pinia: 2.0.27_e7lp6ggkpgyi5vqd44m2kxvk6i
+    dev: false
 
   /pinia/2.0.27_e7lp6ggkpgyi5vqd44m2kxvk6i:
     resolution: {integrity: sha512-nOnXP0OFeL8R4WjAHsterU+11vptda643gH02xKNtSCDPiRzVfRYodOLihLDoa0gL1KKuQKV+KOzEgdt3YvqEw==}

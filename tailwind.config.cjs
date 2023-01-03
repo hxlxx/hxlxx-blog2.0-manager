@@ -2,7 +2,11 @@
 module.exports = {
   content: ['./**/*.html', './src/**/*.{js,vue,ts}'],
   theme: {
-    extend: {}
+    extend: {
+      transitionTimingFunction: {
+        'cus-in-out': 'cubic-bezier(0,.3,1,.7)'
+      }
+    }
   },
   plugins: [
     function ({ addBase }) {

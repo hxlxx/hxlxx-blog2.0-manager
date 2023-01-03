@@ -10,6 +10,15 @@ import request from '@/utils'
 export const addArticle = (options: any) => {
   return request.post('/api/article', options)
 }
+export const addDraft = (options: any) => {
+  return request.post('/api/article/draft', options)
+}
+export const updateArticle = (options: any) => {
+  return request.patch('/api/article', options)
+}
+export const updateDraft = (options: any) => {
+  return request.patch('/api/article/draft', options)
+}
 export const getArticleList = (type?: ARTICLE_STATUS, query?: QueryInfo) => {
   const url = `/api/article${type ? `/${type}` : ''}?skip=${
     query?.skip || 0
@@ -21,6 +30,14 @@ export const getArticleById = (id: number) => {
 }
 export const removeArticleById = (id: number) => {
   return request.delete(`/api/article/${id}`)
+}
+
+// 修改文章置顶和推荐状态
+export const updateArticleTop = (options: any) => {
+  return request.patch('/api/article/top', options)
+}
+export const updateArticleRecommend = (options: any) => {
+  return request.patch('/api/article/recommend', options)
 }
 
 // 文章分类

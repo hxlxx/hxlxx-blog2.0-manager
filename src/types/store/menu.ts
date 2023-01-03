@@ -1,11 +1,14 @@
 export type Menu = {
-  id: number
+  id?: number
+  pid?: number
   title: string
   icon: string
-  path?: string
-  subMenu?: Menu[]
+  path: string
+  visible: boolean
+  children?: Menu[]
 }
 
 export type MenuState = {
-  menuList: Menu[]
+  collapse: boolean
+  width?: number
 }

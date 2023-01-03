@@ -13,7 +13,8 @@ const loginRuleForm = reactive<LoginInfo>({
   password: '',
   code: ''
 })
-const captchaUrl = ref<string>('/api/captcha?' + Math.random())
+const baseUrl = '/api/captcha'
+const captchaUrl = ref<string>(`${baseUrl}?${Math.random()}`)
 
 const rules = reactive<FormRules>({
   username: [
@@ -57,9 +58,9 @@ const handleLogin = async () => {
       message: '请输入验证码！'
     })
   }
-  const res = await login({ data: loginRuleForm })
-  if (res?.data) {
-    setToken(res.data.access_token)
+  const { data, code } = (await login({ data: loginRuleForm })) || {}
+  if (code === 200) {
+    setToken(data.access_token)
     const loading = Loading({
       fullscreen: true,
       body: true
@@ -72,7 +73,7 @@ const handleLogin = async () => {
 }
 // 切换验证码
 const handleChangeCaptcha = () => {
-  captchaUrl.value = captchaUrl.value + '?' + Math.random()
+  captchaUrl.value = `${baseUrl}?${Math.random()}`
   loginRuleForm.code = ''
 }
 </script>

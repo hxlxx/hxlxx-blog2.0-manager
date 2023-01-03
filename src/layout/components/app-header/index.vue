@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { useNavTags } from '@/stores'
+import { useMenu, useNavTags } from '@/stores'
 import type { NavTag } from '@/types'
 import { clearToken } from '@/utils'
 import { ref, watch, onBeforeMount } from 'vue'
 import { useRouter, useRoute, type RouteRecord } from 'vue-router'
+import { Expand, Fold } from '@element-plus/icons-vue'
 
-const navTagStore = useNavTags()
 const router = useRouter()
 const route = useRoute()
+const navTagStore = useNavTags()
+const menuStore = useMenu()
 
 const tags = ref<NavTag[]>([])
 const breadcrumbs = ref<RouteRecord[]>([])
 
 onBeforeMount(() => {
   tags.value = navTagStore.navTags
-  navTagStore.initNavTag()
 })
 
 watch(
@@ -27,7 +28,7 @@ watch(
   () => route.path,
   (newVal) => {
     if (newVal !== '/home') {
-      breadcrumbs.value = route.matched
+      breadcrumbs.value = route.matched.filter((route) => route.meta.title)
     } else {
       breadcrumbs.value = []
     }
@@ -35,8 +36,16 @@ watch(
     navTagStore.setNavTag(tag)
   }
 )
+// 折叠菜单
+const handleCollapseMenu = () => {
+  menuStore.setMenuCollapse(!menuStore.collapse)
+}
 // 关闭标签
 const handleCloseTag = (tag: NavTag, index: number) => {
+  const reg = /article\/\w+$/
+  if (reg.test(tag.path)) {
+    sessionStorage.removeItem('article')
+  }
   navTagStore.removeNavTag(tag.path, tag.active)
   if (tag.active && index > 0) {
     const path = tags.value[index - 1].path
@@ -68,6 +77,13 @@ const handleLogout = () => {
   <el-page-header class="py-1">
     <template #breadcrumb>
       <div class="flex items-center pl-1">
+        <el-icon
+          class="mr-3 cursor-pointer"
+          size="20px"
+          @click="handleCollapseMenu"
+        >
+          <component :is="menuStore.collapse ? Expand : Fold"></component>
+        </el-icon>
         <el-breadcrumb separator="/" class="text-lg">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item v-for="route in breadcrumbs" :key="route.path">
@@ -98,16 +114,14 @@ const handleLogout = () => {
     <el-tag
       class="mx-1"
       type="success"
-      effect="dark"
-      :closable="index > 0"
       v-for="(tag, index) in tags"
       :key="tag.path"
+      :closable="index > 0"
+      :effect="tag.active ? 'dark' : 'plain'"
       @close="handleCloseTag(tag, index)"
       @click="handleClickTag(tag)"
     >
-      <div
-        class="tag-content relative px-2 hover:cursor-pointer hover:text-gray-200"
-      >
+      <div class="tag-content relative px-2 hover:cursor-pointer">
         <transition
           appear
           enter-active-class="transition-all duration-1000 ease-out"

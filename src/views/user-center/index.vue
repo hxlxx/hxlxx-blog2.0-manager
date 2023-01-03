@@ -3,7 +3,8 @@ import {} from 'vue'
 </script>
 
 <template>
-  <div class="">
-    <h1>用户中心</h1>
+  <div>
+    <el-button>upload</el-button>
+    <input type="file" />
   </div>
 </template>

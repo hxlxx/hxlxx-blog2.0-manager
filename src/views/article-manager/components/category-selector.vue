@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import type { ArticleCategory } from '@/types'
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 
 type Props = {
   categories: ArticleCategory[]
+  selected?: ArticleCategory
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits(['update:modelValue'])
 const current = ref<ArticleCategory>()
 
+onBeforeMount(() => {
+  if (props.selected) {
+    current.value = props.selected
+    emit('update:modelValue', props.selected.id)
+  }
+})
 // 选择分类
 const handleSelectCategory = (category: ArticleCategory) => {
   const isExist = current.value?.id === category.id

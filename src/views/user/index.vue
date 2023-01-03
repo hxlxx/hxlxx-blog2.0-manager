@@ -1,9 +1,0 @@
-<script setup lang="ts">
-import {} from 'vue'
-</script>
-
-<template>
-  <div class="">
-    <h1>user-list</h1>
-  </div>
-</template>

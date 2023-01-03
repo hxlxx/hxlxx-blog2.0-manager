@@ -1,58 +1,69 @@
 <script setup lang="ts">
-import { useMenuList } from '@/stores/menu'
+import { getMenuList } from '@/api'
 import type { Menu } from '@/types'
-import { ref, watch, onBeforeMount, computed } from 'vue'
+import { ref, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
-
-const menuList = ref<Menu[]>([])
+import { formatDataTree } from '@/utils'
+import { useMenu } from '@/stores'
 
 const route = useRoute()
-const menuListStore = useMenuList()
+const menuStore = useMenu()
+
+const menuList = ref<Menu[]>([])
 
 const activePath = computed(() => {
   return route.meta.activePath ? route.meta.activePath : route.path
 })
 
 onBeforeMount(() => {
-  menuListStore.getMenuList()
+  initMenuList()
 })
 
-watch(
-  () => menuListStore.menuList,
-  (newVal) => {
-    newVal.length && (menuList.value = newVal)
-  }
-)
+const initMenuList = async () => {
+  const { data } = (await getMenuList()) || {}
+  menuList.value = formatDataTree(data)
+}
 </script>
 
 <template>
   <div class="h-screen border-r scrollbar-custom">
     <el-menu
       :default-active="activePath"
-      class="el-menu-vertical-demo border-none"
+      mode="vertical"
       router
+      :collapse="menuStore.collapse"
     >
       <template v-for="(menu, index) in menuList" :key="menu.id">
-        <el-sub-menu v-if="menu.subMenu?.length" :index="`${index + 1}`">
+        <el-sub-menu v-if="menu.children?.length" :index="`${index + 1}`">
           <template #title>
             <i :class="['iconfont', `icon-${menu.icon}`, 'mx-1']"></i>
-            {{ menu.title }}
+            <span>{{ menu.title }}</span>
           </template>
           <el-menu-item
-            v-for="subMenu in menu.subMenu"
+            v-for="subMenu in menu.children"
             :key="subMenu.id"
             :index="subMenu.path"
             :route="subMenu.path"
           >
-            <i :class="['iconfont', `icon-${subMenu.icon}`, 'mx-1']"></i>
-            {{ subMenu.title }}
+            <template #title>
+              <i :class="['iconfont', `icon-${subMenu.icon}`, 'mx-1']"></i>
+              <span>{{ subMenu.title }}</span>
+            </template>
           </el-menu-item>
         </el-sub-menu>
         <el-menu-item v-else :index="menu.path" :route="menu.path">
           <i :class="['iconfont', `icon-${menu.icon}`, 'mx-1']"></i>
-          {{ menu.title }}
+          <template #title>
+            <span>{{ menu.title }}</span>
+          </template>
         </el-menu-item>
       </template>
     </el-menu>
   </div>
 </template>
+
+<style scoped>
+:deep(.el-menu) {
+  border: none;
+}
+</style>

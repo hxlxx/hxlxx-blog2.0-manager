@@ -1,5 +1,7 @@
-import type { Article } from '../views/article'
+import type { Article, ArticleCategory, ArticleTag } from '../views/article'
 
 export type ArticleState = {
-  article: Article
+  articleMap: { [id: string]: Article }
+  tagList: ArticleTag[]
+  categoryList: ArticleCategory[]
 }

@@ -5,15 +5,21 @@ import { defineStore } from 'pinia'
 export const useArticle = defineStore('article', {
   state: (): ArticleState => {
     return {
-      article: {} as Article
+      articleMap: {},
+      tagList: [],
+      categoryList: []
     }
   },
   actions: {
-    setArticle(article: Article) {
-      this.article = article
+    setArticle(id: string, article: Article) {
+      this.articleMap[id] = article
     },
-    getArticle() {
-      return this.article
+    getArticle(id: string) {
+      return this.articleMap[id]
     }
+  },
+  persist: {
+    paths: ['articleMap'],
+    storage: sessionStorage
   }
 })

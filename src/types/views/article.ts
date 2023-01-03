@@ -33,4 +33,6 @@ export type Article = {
   top: boolean
   recommend: boolean
   privacy: boolean
+  tags?: ArticleTag[]
+  category?: ArticleCategory
 }
