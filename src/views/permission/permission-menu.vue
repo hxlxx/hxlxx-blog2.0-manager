@@ -18,7 +18,7 @@ const menuSelectorVisible = ref<boolean>(false)
 const tabsActiveName = ref<string>('first')
 const formInitial = () => ({
   pid: undefined,
-  title: '',
+  label: '',
   path: '',
   icon: '',
   visible: true
@@ -28,15 +28,18 @@ const menuList = ref<Menu[]>([])
 const isMain = ref<boolean>(true)
 const isSub = ref<boolean>(true)
 const isEdit = ref<boolean>(false)
-
-const initMenuList = async () => {
-  const { data } = (await getMenuList()) || {}
-  menuList.value = formatDataTree(data)
-}
+const loading = ref<boolean>(false)
 
 onMounted(() => {
   initMenuList()
 })
+
+const initMenuList = async () => {
+  loading.value = true
+  const { data } = (await getMenuList()) || {}
+  menuList.value = formatDataTree(data)
+  loading.value = false
+}
 
 // 打开对话框
 const handleOpenDialog = () => {
@@ -44,6 +47,12 @@ const handleOpenDialog = () => {
   menuDialogVisible.value = true
   isMain.value = true
   isSub.value = true
+}
+// 关闭对话框
+const handleCloseDialog = () => {
+  menuDialogVisible.value = false
+  menuSelectorVisible.value = false
+  resetForm()
 }
 // 切换 tab 栏
 const handleChangeTab = (name: TabPaneName) => {
@@ -57,9 +66,10 @@ const handleChangeTab = (name: TabPaneName) => {
 // 提交或更新菜单
 const handleSubmitMenu = async () => {
   const menu = toRaw(menuForm)
-  const { code } = isEdit.value
-    ? await updateMenu({ data: menu })
-    : await addMenu({ data: menu })
+  const { code } =
+    (isEdit.value
+      ? await updateMenu({ data: menu })
+      : await addMenu({ data: menu })) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -73,12 +83,15 @@ const handleSubmitMenu = async () => {
 }
 // 更新菜单显示
 const handleChangeMenuVisible = async (id: number, value: boolean) => {
-  const { code } = await updateMenuVisible({ data: { id, visible: value } })
+  loading.value = true
+  const { code } =
+    (await updateMenuVisible({ data: { id, visible: value } })) || {}
   if (code === 200) {
     Message({
       type: 'success',
       message: '修改菜单状态成功！'
     })
+    loading.value = false
   }
 }
 // 重置表单
@@ -88,7 +101,7 @@ const resetForm = () => {
 }
 // 添加子菜单
 const handleAddSubMenu = async (id: number) => {
-  const { data } = await getMenuById(id)
+  const { data } = (await getMenuById(id)) || {}
   isMain.value = false
   isSub.value = true
   menuSelectorVisible.value = true
@@ -98,7 +111,7 @@ const handleAddSubMenu = async (id: number) => {
 }
 // 编辑菜单
 const handleEditMenu = async (id: number) => {
-  const { data } = await getMenuById(id)
+  const { data } = (await getMenuById(id)) || {}
   if (data.pid) {
     isMain.value = false
     isSub.value = true
@@ -114,7 +127,7 @@ const handleEditMenu = async (id: number) => {
 }
 // 删除菜单
 const handleConfirm = async (id: number) => {
-  const { code } = await removeMenu(id)
+  const { code } = (await removeMenu(id)) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -135,7 +148,8 @@ const handleConfirm = async (id: number) => {
     </div>
     <el-table
       border
-      row-key="title"
+      v-loading="loading"
+      row-key="label"
       :data="menuList"
       :header-cell-style="{
         color: '#606266',
@@ -143,7 +157,7 @@ const handleConfirm = async (id: number) => {
       }"
       :cell-style="{ 'text-align': 'center' }"
     >
-      <el-table-column label="菜单名称" prop="title" width="150px" />
+      <el-table-column label="菜单名称" prop="label" width="150px" />
       <el-table-column label="菜单路径">
         <template #default="{ row }">
           <el-tag effect="plain">{{ row.path }}</el-tag>
@@ -199,9 +213,10 @@ const handleConfirm = async (id: number) => {
     </el-table>
     <el-dialog
       v-model="menuDialogVisible"
-      :title="isMain && isSub ? '添加菜单' : '编辑菜单'"
       width="360px"
       align-center
+      :title="isMain && isSub ? '添加菜单' : '编辑菜单'"
+      :close-on-click-modal="false"
     >
       <el-tabs v-model="tabsActiveName" @tab-change="handleChangeTab">
         <el-tab-pane
@@ -222,7 +237,7 @@ const handleConfirm = async (id: number) => {
               <el-option
                 v-for="menu in menuList"
                 :key="menu.id"
-                :label="menu.title"
+                :label="menu.label"
                 :value="menu.id"
               />
             </el-select>
@@ -230,7 +245,7 @@ const handleConfirm = async (id: number) => {
           <el-form-item label="菜单名称">
             <el-input
               clearable
-              v-model="menuForm.title"
+              v-model="menuForm.label"
               placeholder="例：首页"
             />
           </el-form-item>
@@ -254,9 +269,7 @@ const handleConfirm = async (id: number) => {
       </el-tabs>
       <template #footer>
         <span class="dialog-footer">
-          <el-button type="danger" @click="menuDialogVisible = false">
-            关闭
-          </el-button>
+          <el-button type="danger" @click="handleCloseDialog"> 关闭 </el-button>
           <el-button type="primary" @click="handleSubmitMenu"> 提交 </el-button>
         </span>
       </template>

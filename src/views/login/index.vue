@@ -58,17 +58,15 @@ const handleLogin = async () => {
       message: '请输入验证码！'
     })
   }
+  const loading = Loading({
+    fullscreen: true,
+    body: true
+  })
   const { data, code } = (await login({ data: loginRuleForm })) || {}
   if (code === 200) {
     setToken(data.access_token)
-    const loading = Loading({
-      fullscreen: true,
-      body: true
-    })
-    setTimeout(() => {
-      loading.close()
-      router.push({ path: '/' })
-    }, 1000)
+    loading.close()
+    router.push({ path: '/' })
   }
 }
 // 切换验证码

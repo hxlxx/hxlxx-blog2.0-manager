@@ -17,18 +17,21 @@ const category = ref<ArticleCategory>({ id: 0, category_name: '' })
 const memo = ref<string>('')
 const isChanged = ref<boolean>(false)
 const categoryName = ref<string>('')
+const loading = ref<boolean>(false)
 
 onBeforeMount(() => {
   initCategoryList()
 })
 // 初始化分类列表
 const initCategoryList = async () => {
+  loading.value = true
   const { data } = (await getCategoryList()) || {}
   categoryList.value = data.res
+  loading.value = false
 }
 // 添加分类
 const handleAddCategory = async () => {
-  const { code } = await createCategory(categoryName.value)
+  const { code } = (await createCategory(categoryName.value)) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -94,6 +97,7 @@ const handleConfirm = async (id: number) => {
     </div>
     <el-table
       border
+      v-loading="loading"
       :data="categoryList"
       :header-cell-style="{
         color: '#606266',

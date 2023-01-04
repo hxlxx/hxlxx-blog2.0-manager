@@ -17,18 +17,21 @@ const tag = ref<ArticleTag>({ id: 0, tag_name: '' })
 const memo = ref<string>('')
 const isChanged = ref<boolean>(false)
 const tagName = ref<string>('')
+const loading = ref<boolean>(false)
 
 onBeforeMount(() => {
   initTagList()
 })
 // 初始化分类列表
 const initTagList = async () => {
+  loading.value = true
   const { data } = (await getTagList()) || {}
   tagList.value = data.res
+  loading.value = false
 }
 // 添加分类
 const handleAddCategory = async () => {
-  const { code } = await createTag(tagName.value)
+  const { code } = (await createTag(tagName.value)) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -94,6 +97,7 @@ const handleConfirm = async (id: number) => {
     </div>
     <el-table
       border
+      v-loading="loading"
       :data="tagList"
       :header-cell-style="{
         color: '#606266',

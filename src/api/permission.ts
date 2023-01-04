@@ -19,3 +19,13 @@ export const updateMenu = (options: any) => {
 export const updateMenuVisible = (options: any) => {
   return request.patch('/api/menu/visible', options)
 }
+// 角色
+export const getRoleList = () => {
+  return request.get('/api/role')
+}
+export const updateRolePermission = (options: any) => {
+  return request.patch('/api/role', options)
+}
+export const getPermissionMenu = () => {
+  return request.get('/api/role/menu')
+}

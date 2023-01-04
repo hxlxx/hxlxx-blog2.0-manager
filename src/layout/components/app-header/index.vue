@@ -32,7 +32,7 @@ watch(
     } else {
       breadcrumbs.value = []
     }
-    const tag = { tag_name: route.meta.title!, path: route.path, active: true }
+    const tag = { tag_name: route.meta.title, path: route.path, active: true }
     navTagStore.setNavTag(tag)
   }
 )

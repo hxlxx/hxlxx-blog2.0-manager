@@ -28,16 +28,16 @@ const initMenuList = async () => {
 <template>
   <div class="h-screen border-r scrollbar-custom">
     <el-menu
-      :default-active="activePath"
       mode="vertical"
       router
+      :default-active="activePath"
       :collapse="menuStore.collapse"
     >
       <template v-for="(menu, index) in menuList" :key="menu.id">
         <el-sub-menu v-if="menu.children?.length" :index="`${index + 1}`">
           <template #title>
             <i :class="['iconfont', `icon-${menu.icon}`, 'mx-1']"></i>
-            <span>{{ menu.title }}</span>
+            <span>{{ menu.label }}</span>
           </template>
           <el-menu-item
             v-for="subMenu in menu.children"
@@ -47,14 +47,14 @@ const initMenuList = async () => {
           >
             <template #title>
               <i :class="['iconfont', `icon-${subMenu.icon}`, 'mx-1']"></i>
-              <span>{{ subMenu.title }}</span>
+              <span>{{ subMenu.label }}</span>
             </template>
           </el-menu-item>
         </el-sub-menu>
         <el-menu-item v-else :index="menu.path" :route="menu.path">
           <i :class="['iconfont', `icon-${menu.icon}`, 'mx-1']"></i>
           <template #title>
-            <span>{{ menu.title }}</span>
+            <span>{{ menu.label }}</span>
           </template>
         </el-menu-item>
       </template>

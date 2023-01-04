@@ -1,7 +1,7 @@
 export type Menu = {
   id?: number
   pid?: number
-  title: string
+  label: string
   icon: string
   path: string
   visible: boolean

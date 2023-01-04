@@ -63,14 +63,8 @@ export const routes = [
         meta: { title: '发布文章', activePath: '/article' }
       },
       {
-        path: ':id',
-        name: 'edit-article',
-        component: () => import('@/views/article-manager/article-publish.vue'),
-        meta: { title: '编辑文章' }
-      },
-      {
         path: 'list',
-        name: 'list',
+        name: 'article-list',
         component: () => import('@/views/article-manager/article-list.vue'),
         meta: { title: '文章列表', activePath: '/article/list' }
       },
@@ -86,6 +80,12 @@ export const routes = [
         name: 'tags',
         component: () => import('@/views/article-manager/article-tags.vue'),
         meta: { title: '标签管理', activePath: '/article/tags' }
+      },
+      {
+        path: ':id(\\d+)',
+        name: 'edit-article',
+        component: () => import('@/views/article-manager/article-publish.vue'),
+        meta: { title: '编辑文章' }
       }
     ]
   },
@@ -100,6 +100,12 @@ export const routes = [
         name: 'menu',
         component: () => import('@/views/permission/permission-menu.vue'),
         meta: { title: '菜单管理', activePath: '/permission/menu' }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('@/views/permission/permission-role.vue'),
+        meta: { title: '角色管理', activePath: '/permission/role' }
       }
     ]
   },

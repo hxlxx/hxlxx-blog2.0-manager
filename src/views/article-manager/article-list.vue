@@ -10,9 +10,10 @@ import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
 import { Message } from '@/utils'
 import { onBeforeMount, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { Clock } from '@element-plus/icons-vue'
 
-const articleStore = useArticle()
 const router = useRouter()
+const articleStore = useArticle()
 
 const articleList = ref<Article[]>([])
 const query = reactive<QueryInfo>({
@@ -22,12 +23,14 @@ const query = reactive<QueryInfo>({
   total: 0
 })
 const articleStatus = ref<ARTICLE_STATUS>(ARTICLE_STATUS.PUBLISHED)
+const loading = ref<boolean>(false)
 
 onBeforeMount(() => {
   initArticleList()
 })
 // 初始化文章列表
 const initArticleList = async () => {
+  loading.value = true
   const { data } =
     (await getArticleList(articleStatus.value, {
       skip: (query.page! - 1) * query.limit!,
@@ -35,6 +38,7 @@ const initArticleList = async () => {
     })) || {}
   articleList.value = data?.res
   query.total = data?.count
+  loading.value = false
 }
 const article_type = (type: string) => {
   switch (type) {
@@ -69,7 +73,7 @@ const handleShowDraftArticle = () => {
 }
 // 编辑
 const handleEditArticle = async (id: number) => {
-  const { data } = await getArticleById(id)
+  const { data } = (await getArticleById(id)) || {}
   articleStore.setArticle(id + '', data)
   router.push({ name: 'edit-article', params: { id } })
 }
@@ -79,22 +83,27 @@ const handleRemoveArticle = (id: number) => {
 }
 // 修改置顶状态
 const handleChangeTop = async (top: boolean, id: number) => {
-  const { code } = await updateArticleTop({ data: { id, top } })
+  loading.value = true
+  const { code } = (await updateArticleTop({ data: { id, top } })) || {}
   if (code === 200) {
     Message({
       type: top ? 'success' : 'warning',
       message: top ? '文章置顶成功！' : '文章已取消置顶！'
     })
+    loading.value = false
   }
 }
 // 修改推荐状态
 const handleChangeRecommend = async (recommend: boolean, id: number) => {
-  const { code } = await updateArticleRecommend({ data: { id, recommend } })
+  loading.value = true
+  const { code } =
+    (await updateArticleRecommend({ data: { id, recommend } })) || {}
   if (code === 200) {
     Message({
       type: recommend ? 'success' : 'warning',
       message: recommend ? '文章推荐成功！' : '文章已取消推荐'
     })
+    loading.value = false
   }
 }
 </script>
@@ -121,6 +130,7 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
     </div>
     <el-table
       border
+      v-loading="loading"
       :data="articleList"
       :header-cell-style="{
         color: '#606266',
@@ -165,9 +175,12 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="发布时间" width="120">
+      <el-table-column label="发布时间" width="150">
         <template #default="{ row }">
-          <span>{{ dateFormat(row.created_at).format('YYYY-MM-DD') }}</span>
+          <div class="flex gap-2 justify-center items-center">
+            <el-icon><Clock /></el-icon>
+            <span>{{ dateFormat(row.created_at).format('YYYY-MM-DD') }}</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="置顶" width="100">
