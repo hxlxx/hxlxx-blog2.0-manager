@@ -9,7 +9,8 @@ type Props = {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['update:modelValue'])
-const current = ref<ArticleCategory>()
+
+const current = ref<ArticleCategory | null>()
 
 onBeforeMount(() => {
   if (props.selected) {
@@ -17,6 +18,7 @@ onBeforeMount(() => {
     emit('update:modelValue', props.selected.id)
   }
 })
+
 // 选择分类
 const handleSelectCategory = (category: ArticleCategory) => {
   const isExist = current.value?.id === category.id

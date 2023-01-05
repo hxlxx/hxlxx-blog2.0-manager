@@ -90,8 +90,8 @@ const handleChangeTop = async (top: boolean, id: number) => {
       type: top ? 'success' : 'warning',
       message: top ? '文章置顶成功！' : '文章已取消置顶！'
     })
-    loading.value = false
   }
+  loading.value = false
 }
 // 修改推荐状态
 const handleChangeRecommend = async (recommend: boolean, id: number) => {
@@ -103,8 +103,8 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
       type: recommend ? 'success' : 'warning',
       message: recommend ? '文章推荐成功！' : '文章已取消推荐'
     })
-    loading.value = false
   }
+  loading.value = false
 }
 </script>
 

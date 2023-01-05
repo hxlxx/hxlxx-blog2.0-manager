@@ -1,8 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
-import { Message, MessageBox } from './message'
 import type { ResponseData } from '@/types'
-import { clearToken, getToken } from '@/utils'
+import { clearToken, getToken, Message, MessageBox, Notify } from '@/utils'
 import router from '@/router'
 
 class HttpRequest {
@@ -11,6 +10,7 @@ class HttpRequest {
   queue: {
     [index: string]: boolean
   }
+  // 防止多次显示提示框
   flag: boolean
   constructor() {
     this.baseURL =
@@ -96,6 +96,12 @@ class HttpRequest {
               }
             })
           }
+        } else if (error.data.code === 403) {
+          Notify({
+            title: '操作失败',
+            type: 'error',
+            message: '权限不足！'
+          })
         } else {
           Message({
             type: 'error',

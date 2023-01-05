@@ -37,9 +37,9 @@ const handleAddCategory = async () => {
       type: 'success',
       message: '新建文章分类成功！'
     })
-    categoryName.value = ''
     initCategoryList()
   }
+  categoryName.value = ''
 }
 // 关闭对话框
 const handleCloseDialog = () => {
@@ -58,19 +58,19 @@ const handleInput = () => {
 }
 // 提交修改
 const handleSubmitCategory = async () => {
-  const { code } = await updateCategoryById(category.value!)
+  const { code } = (await updateCategoryById(category.value!)) || {}
   if (code === 200) {
-    dialogVisible.value = false
     Message({
       type: 'success',
       message: '更新文章分类成功！'
     })
     initCategoryList()
   }
+  dialogVisible.value = false
 }
 // 确认删除
 const handleConfirm = async (id: number) => {
-  const { code } = await removeCategoryById(id)
+  const { code } = (await removeCategoryById(id)) || {}
   if (code === 200) {
     Message({
       type: 'success',

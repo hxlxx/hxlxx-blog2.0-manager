@@ -5,9 +5,7 @@ import { defineStore } from 'pinia'
 export const useArticle = defineStore('article', {
   state: (): ArticleState => {
     return {
-      articleMap: {},
-      tagList: [],
-      categoryList: []
+      articleMap: {}
     }
   },
   actions: {

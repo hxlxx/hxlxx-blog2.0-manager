@@ -65,9 +65,9 @@ const handleLogin = async () => {
   const { data, code } = (await login({ data: loginRuleForm })) || {}
   if (code === 200) {
     setToken(data.access_token)
-    loading.close()
     router.push({ path: '/' })
   }
+  loading.close()
 }
 // 切换验证码
 const handleChangeCaptcha = () => {

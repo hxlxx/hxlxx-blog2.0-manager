@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw, watch, onMounted } from 'vue'
+import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
 import type { UploadFile } from 'element-plus'
 import { Delete, Plus, ZoomIn } from '@element-plus/icons-vue'
@@ -10,7 +10,14 @@ import {
   type ArticleCategory
 } from '@/types'
 import { Message } from '@/utils'
-import { addArticle, updateArticle, addDraft, updateDraft } from '@/api'
+import {
+  addArticle,
+  updateArticle,
+  getTagList,
+  getCategoryList,
+  addDraft,
+  updateDraft
+} from '@/api'
 import { useRoute, useRouter } from 'vue-router'
 import { useArticle, useNavTags } from '@/stores'
 import { articleTypes } from './constants'
@@ -37,7 +44,9 @@ const formInitial = () => ({
   content: '',
   description: '',
   category_id: 0,
+  category: undefined,
   tag_ids: [],
+  tags: [],
   cover_url: '',
   article_type: ARTICLE_TYPE.ORIGINAL,
   status: false,
@@ -47,11 +56,6 @@ const formInitial = () => ({
 })
 const articleForm = reactive<Article>(formInitial())
 const saveOrEdit = ref<boolean>()
-
-onMounted(() => {
-  tags.value = articleStore.tagList
-  categories.value = articleStore.categoryList
-})
 
 watch(
   () => route.params.id,
@@ -63,13 +67,19 @@ watch(
       fileList.value = [{ url: article.cover_url } as any]
     } else {
       Object.assign(articleForm, formInitial())
+      fileList.value = []
     }
   },
-  {
-    immediate: true
-  }
+  { immediate: true }
 )
 
+// 初始化文章选项
+const initArticleOptions = async () => {
+  const { data: tagList } = await getTagList()
+  const { data: categoryList } = await getCategoryList()
+  tags.value = tagList.res
+  categories.value = categoryList.res
+}
 // 发布文章
 const handlePublishArticle = () => {
   if (!articleForm.title) {
@@ -84,6 +94,7 @@ const handlePublishArticle = () => {
       message: '请先输入文章内容'
     })
   }
+  initArticleOptions()
   articleDialogVisible.value = true
 }
 // 关闭对话框
@@ -141,18 +152,17 @@ const handleSubmitArticle = async () => {
   }
   articleForm.status = true
   const article = toRaw(articleForm)
-  const { code } = saveOrEdit.value
-    ? await addArticle({ data: article })
-    : await updateArticle({ data: article })
+  const { code } =
+    (saveOrEdit.value
+      ? await addArticle({ data: article })
+      : await updateArticle({ data: article })) || {}
   if (code === 200) {
     Message({
       type: 'success',
       message: saveOrEdit.value ? '发布成功！' : '更新成功！'
     })
-    handleResetForm()
-    articleForm.title = ''
-    articleForm.content = ''
     clearRoute()
+    handleResetForm()
   }
   articleDialogVisible.value = false
 }
@@ -165,25 +175,22 @@ const handleSaveOrUpdateAsDraft = async () => {
     })
   }
   const article = toRaw(articleForm)
-  const { code } = saveOrEdit.value
-    ? await addDraft({ data: article })
-    : await updateDraft({ data: article })
+  const { code } =
+    (saveOrEdit.value
+      ? await addDraft({ data: article })
+      : await updateDraft({ data: article })) || {}
   if (code === 200) {
     Message({
       type: 'success',
       message: '保存草稿成功！'
     })
-    handleResetForm()
-    articleForm.title = ''
-    articleForm.content = ''
     clearRoute()
+    handleResetForm()
   }
 }
 // 重置表单
 const handleResetForm = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { title, content, ...rest } = formInitial()
-  Object.assign(articleForm, rest)
+  Object.assign(articleForm, formInitial())
 }
 // 图片预览
 const handlePictureCardPreview = (file: UploadFile) => {
@@ -227,6 +234,7 @@ const handleRemoveFile = () => {
       title="添加文章"
       width="50%"
       align-center
+      destroy-on-close
       v-model="articleDialogVisible"
       :before-close="beforeCloseDialog"
       @open="handleOpenDialog"

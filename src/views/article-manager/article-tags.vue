@@ -37,9 +37,9 @@ const handleAddCategory = async () => {
       type: 'success',
       message: '新建文章标签成功！'
     })
-    tagName.value = ''
     initTagList()
   }
+  tagName.value = ''
 }
 // 关闭对话框
 const handleCloseDialog = () => {
@@ -58,19 +58,19 @@ const handleInput = () => {
 }
 // 提交修改
 const handleSubmitTag = async () => {
-  const { code } = await updateTagById(tag.value!)
+  const { code } = (await updateTagById(tag.value!)) || {}
   if (code === 200) {
-    dialogVisible.value = false
     Message({
       type: 'success',
       message: '更新文章分类成功！'
     })
     initTagList()
   }
+  dialogVisible.value = false
 }
 // 确认删除
 const handleConfirm = async (id: number) => {
-  const { code } = await removeTagById(id)
+  const { code } = (await removeTagById(id)) || {}
   if (code === 200) {
     Message({
       type: 'success',

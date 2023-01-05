@@ -77,9 +77,9 @@ const handleSubmitMenu = async () => {
     })
     initMenuList()
     resetForm()
-    menuDialogVisible.value = false
-    isEdit.value = false
   }
+  menuDialogVisible.value = false
+  isEdit.value = false
 }
 // 更新菜单显示
 const handleChangeMenuVisible = async (id: number, value: boolean) => {
@@ -91,8 +91,8 @@ const handleChangeMenuVisible = async (id: number, value: boolean) => {
       type: 'success',
       message: '修改菜单状态成功！'
     })
-    loading.value = false
   }
+  loading.value = false
 }
 // 重置表单
 const resetForm = () => {

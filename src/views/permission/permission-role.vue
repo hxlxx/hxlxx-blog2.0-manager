@@ -60,14 +60,14 @@ const handleCheckChange = (data: PermissionMenu, checked: boolean) => {
 // 提交修改
 const handleSubmitMenuPermission = async () => {
   const role = toRaw(roleForm)
-  const { code } = await updateRolePermission({ data: role })
+  const { code } = (await updateRolePermission({ data: role })) || {}
   if (code === 200) {
     Message({
       type: 'success',
       message: '修改菜单权限成功！'
     })
+    initRoleList()
   }
-  initRoleList()
   dialogVisible.value = false
 }
 </script>
