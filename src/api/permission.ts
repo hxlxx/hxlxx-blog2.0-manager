@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 菜单
-export const addMenu = (options: any) => {
+export const createMenu = (options: any) => {
   return request.post('/api/menu', options)
 }
 export const getMenuList = () => {
@@ -23,9 +23,15 @@ export const updateMenuVisible = (options: any) => {
 export const getRoleList = () => {
   return request.get('/api/role')
 }
+export const createRole = (options: any) => {
+  return request.post('/api/role', options)
+}
 export const updateRolePermission = (options: any) => {
   return request.patch('/api/role', options)
 }
 export const getPermissionMenu = () => {
   return request.get('/api/role/menu')
+}
+export const removeRoleById = (id: number) => {
+  return request.delete(`/api/role/${id}`)
 }

@@ -10,7 +10,6 @@ import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
 import { Message } from '@/utils'
 import { onBeforeMount, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { Clock } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const articleStore = useArticle()
@@ -74,7 +73,7 @@ const handleShowDraftArticle = () => {
 // 编辑
 const handleEditArticle = async (id: number) => {
   const { data } = (await getArticleById(id)) || {}
-  articleStore.setArticle(id + '', data)
+  articleStore.setArticle(id + '', data?.res)
   router.push({ name: 'edit-article', params: { id } })
 }
 // 删除
@@ -175,12 +174,10 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="发布时间" width="150">
+      <el-table-column label="发布时间" width="160">
         <template #default="{ row }">
-          <div class="flex gap-2 justify-center items-center">
-            <el-icon><Clock /></el-icon>
-            <span>{{ dateFormat(row.created_at).format('YYYY-MM-DD') }}</span>
-          </div>
+          <h-icon icon="time" />
+          {{ dateFormat(row.created_at).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
       <el-table-column label="置顶" width="100">
@@ -202,18 +199,22 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
       <el-table-column label="操作" width="200">
         <template #default="{ row }">
           <el-button
+            plain
             type="primary"
             size="small"
             @click="handleEditArticle(row.id)"
           >
-            编辑
+            <h-icon class="mr-1" icon="edit" size="14px" />
+            <span>编辑</span>
           </el-button>
           <el-button
+            plain
             type="danger"
             size="small"
             @click="handleRemoveArticle(row.id)"
           >
-            删除
+            <h-icon class="mr-1" icon="delete" size="14px" />
+            <span>删除</span>
           </el-button>
         </template>
       </el-table-column>

@@ -11,10 +11,5 @@ export const useMenu = defineStore('menuList', {
     setMenuCollapse(collapse: boolean) {
       this.collapse = collapse
     }
-  },
-  getters: {
-    width(): number {
-      return this.collapse ? 65 : 200
-    }
   }
 })

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, toRaw, onMounted } from 'vue'
-import { Plus } from '@element-plus/icons-vue'
 import type { Menu } from '@/types'
 import {
-  addMenu,
+  createMenu,
   removeMenu,
   getMenuById,
   updateMenu,
@@ -69,7 +68,7 @@ const handleSubmitMenu = async () => {
   const { code } =
     (isEdit.value
       ? await updateMenu({ data: menu })
-      : await addMenu({ data: menu })) || {}
+      : await createMenu({ data: menu })) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -142,7 +141,7 @@ const handleConfirm = async (id: number) => {
   <div>
     <div class="w-80 flex mb-3">
       <el-button type="primary" class="ml-3" @click="handleOpenDialog">
-        <el-icon><Plus /></el-icon>
+        <h-icon class="mr-1" icon="plus" />
         <span>添加菜单</span>
       </el-button>
     </div>
@@ -158,17 +157,22 @@ const handleConfirm = async (id: number) => {
       :cell-style="{ 'text-align': 'center' }"
     >
       <el-table-column label="菜单名称" prop="label" width="150px" />
+      <el-table-column label="菜单图标" width="100px">
+        <template #default="{ row }">
+          <h-icon :icon="row.icon" size="20px" />
+        </template>
+      </el-table-column>
+      <el-table-column label="图标名称">
+        <template #default="{ row }">
+          <el-tag type="success" effect="plain">{{ row.icon }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="菜单路径">
         <template #default="{ row }">
           <el-tag effect="plain">{{ row.path }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="菜单图标">
-        <template #default="{ row }">
-          <el-tag type="success" effect="plain">{{ row.icon }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="显示菜单">
+      <el-table-column label="显示菜单" width="150px">
         <template #default="{ row }">
           <el-switch
             v-model="row.visible"
@@ -181,19 +185,21 @@ const handleConfirm = async (id: number) => {
           <el-button
             v-if="!row.pid"
             plain
-            type="primary"
+            type="success"
             size="small"
             @click="handleAddSubMenu(row.id)"
           >
-            <el-icon><Plus /></el-icon>
+            <h-icon class="mr-1" icon="plus" />
             <span>添加子菜单</span>
           </el-button>
           <el-button
+            plain
             type="primary"
             size="small"
             @click="handleEditMenu(row.id)"
           >
-            编辑
+            <h-icon class="mr-1" icon="edit" size="14px" />
+            <span>编辑</span>
           </el-button>
           <el-popconfirm
             title="是否确认删除？"
@@ -205,7 +211,10 @@ const handleConfirm = async (id: number) => {
             @cancel="Message({ type: 'info', message: '取消删除' })"
           >
             <template #reference>
-              <el-button type="danger" size="small">删除</el-button>
+              <el-button plain type="danger" size="small">
+                <h-icon class="mr-1" icon="delete" size="14px" />
+                <span>删除</span>
+              </el-button>
             </template>
           </el-popconfirm>
         </template>

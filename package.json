@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.0.10",
+    "@icon-park/vue-next": "^1.4.2",
     "axios": "^1.2.1",
     "dayjs": "^1.11.7",
     "element-plus": "^2.2.26",

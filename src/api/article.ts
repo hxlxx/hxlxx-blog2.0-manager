@@ -7,10 +7,10 @@ import type {
 import request from '@/utils'
 
 //文章
-export const addArticle = (options: any) => {
+export const createArticle = (options: any) => {
   return request.post('/api/article', options)
 }
-export const addDraft = (options: any) => {
+export const createDraft = (options: any) => {
   return request.post('/api/article/draft', options)
 }
 export const updateArticle = (options: any) => {

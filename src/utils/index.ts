@@ -1,4 +1,4 @@
-export * from './token'
+export * from './sessionStorage'
 export { default } from './request'
 export * from './message'
 export * from './errorHandler'

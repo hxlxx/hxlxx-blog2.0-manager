@@ -56,7 +56,7 @@ const handleRemoveCategory = () => {
         <template #header>
           <span>请选择分类</span>
         </template>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-wrap">
           <el-tag
             size="large"
             class="text-sm cursor-pointer"

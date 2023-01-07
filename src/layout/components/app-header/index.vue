@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useMenu, useNavTags } from '@/stores'
 import type { NavTag } from '@/types'
-import { clearToken } from '@/utils'
+import { clearToken, getUser } from '@/utils'
 import { ref, watch, onBeforeMount } from 'vue'
 import { useRouter, useRoute, type RouteRecord } from 'vue-router'
-import { Expand, Fold } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -13,9 +12,11 @@ const menuStore = useMenu()
 
 const tags = ref<NavTag[]>([])
 const breadcrumbs = ref<RouteRecord[]>([])
+const user = ref<any>()
 
 onBeforeMount(() => {
   tags.value = navTagStore.navTags
+  user.value = getUser()
 })
 
 watch(
@@ -77,13 +78,13 @@ const handleLogout = () => {
   <el-page-header class="py-1">
     <template #breadcrumb>
       <div class="flex items-center pl-1">
-        <el-icon
-          class="mr-3 cursor-pointer"
-          size="20px"
+        <div
+          class="flex items-center mr-3 cursor-pointer"
           @click="handleCollapseMenu"
         >
-          <component :is="menuStore.collapse ? Expand : Fold"></component>
-        </el-icon>
+          <h-icon v-if="menuStore.collapse" icon="menu-fold-one" size="20px" />
+          <h-icon v-else icon="menu-unfold-one" size="20px" />
+        </div>
         <el-breadcrumb separator="/" class="text-lg">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item v-for="route in breadcrumbs" :key="route.path">
@@ -91,11 +92,7 @@ const handleLogout = () => {
           </el-breadcrumb-item>
         </el-breadcrumb>
         <el-dropdown class="ml-[auto]">
-          <el-avatar
-            class="mr-3"
-            :size="40"
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          />
+          <el-avatar class="mr-3" :size="40" :src="user.avatar_url" />
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="handleToUserCenter"

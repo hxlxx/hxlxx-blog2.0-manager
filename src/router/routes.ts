@@ -60,7 +60,7 @@ export const routes = [
         path: 'publish',
         name: 'article',
         component: () => import('@/views/article-manager/article-publish.vue'),
-        meta: { title: '发布文章', activePath: '/article' }
+        meta: { title: '发布文章', activePath: '/article/publish' }
       },
       {
         path: 'list',
@@ -119,7 +119,7 @@ export const routes = [
         path: 'list',
         name: 'user-list',
         component: () => import('@/views/user/user-list.vue'),
-        meta: { title: '用户列表', activePath: '/user' }
+        meta: { title: '用户列表', activePath: '/user/list' }
       }
     ]
   },

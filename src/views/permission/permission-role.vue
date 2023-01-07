@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, onBeforeMount, reactive, toRaw, nextTick } from 'vue'
-import { getRoleList, updateRolePermission, getPermissionMenu } from '@/api'
-import { Clock } from '@element-plus/icons-vue'
+import {
+  getRoleList,
+  createRole,
+  updateRolePermission,
+  getPermissionMenu,
+  removeRoleById
+} from '@/api'
 import type { PermissionMenu, Role } from '@/types'
 import { formatDataTree, Message } from '@/utils'
 import type { ElTree } from 'element-plus'
@@ -19,6 +24,7 @@ const formInitial = () => ({
 })
 const roleForm = reactive<Role>(formInitial())
 const elTreeRef = ref<InstanceType<typeof ElTree>>()
+const isEdit = ref<boolean>(false)
 const menu = ref<PermissionMenu[]>([])
 const loading = ref<boolean>(false)
 
@@ -28,15 +34,26 @@ onBeforeMount(() => {
 
 const initRoleList = async () => {
   loading.value = true
-  const { data } = (await getRoleList()) || {}
-  roleList.value = data
+  const { data: roles } = (await getRoleList()) || {}
+  const { data: menus } = (await getPermissionMenu()) || {}
+  roleList.value = roles
+  menu.value = formatDataTree(menus)
   loading.value = false
+}
+// 打开对话框
+const handleOpenDialog = () => {
+  dialogVisible.value = true
+  isEdit.value = false
+  resetForm()
+}
+// 重置表单数据
+const resetForm = () => {
+  Object.assign(roleForm, formInitial())
 }
 // 编辑菜单权限
 const handleEditMenuPermission = async (id: number) => {
-  const { data } = (await getPermissionMenu()) || {}
-  menu.value = formatDataTree(data)
   dialogVisible.value = true
+  isEdit.value = true
   const role = roleList.value.find((role) => role.id === id)!
   Object.assign(roleForm, role)
   const checkedKeys = roleForm.permission_menu
@@ -60,20 +77,40 @@ const handleCheckChange = (data: PermissionMenu, checked: boolean) => {
 // 提交修改
 const handleSubmitMenuPermission = async () => {
   const role = toRaw(roleForm)
-  const { code } = (await updateRolePermission({ data: role })) || {}
+  const { code } =
+    (isEdit.value
+      ? await updateRolePermission({ data: role })
+      : await createRole({ data: role })) || {}
   if (code === 200) {
     Message({
       type: 'success',
-      message: '修改菜单权限成功！'
+      message: isEdit.value ? '修改角色权限成功！' : '创建角色成功！'
     })
     initRoleList()
   }
   dialogVisible.value = false
 }
+// 确定删除
+const handleConfirm = async (id: number) => {
+  const { code } = (await removeRoleById(id)) || {}
+  if (code === 200) {
+    Message({
+      type: 'success',
+      message: '删除角色成功！'
+    })
+    initRoleList()
+  }
+}
 </script>
 
 <template>
   <div>
+    <div class="w-80 flex mb-3">
+      <el-button type="primary" class="ml-3" @click="handleOpenDialog">
+        <h-icon class="mr-1" icon="plus" />
+        <span>添加角色</span>
+      </el-button>
+    </div>
     <el-table
       border
       v-loading="loading"
@@ -92,33 +129,50 @@ const handleSubmitMenuPermission = async () => {
       </el-table-column>
       <el-table-column label="创建时间">
         <template #default="{ row }">
-          <div class="flex gap-2 justify-center items-center">
-            <el-icon><Clock /></el-icon>
-            <span>{{ dateFormat(row.created_at).format('YYYY-MM-DD') }}</span>
-          </div>
+          <h-icon icon="time" />
+          {{ dateFormat(row.created_at).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template #default="{ row }">
           <el-button
+            plain
             type="primary"
             size="small"
             @click="handleEditMenuPermission(row.id)"
           >
-            菜单权限
+            <h-icon class="mr-1" icon="edit" size="14px" />
+            <span>菜单权限</span>
           </el-button>
+          <el-popconfirm
+            title="是否确认删除？"
+            confirm-button-text="确认"
+            cancel-button-text="取消"
+            confirm-button-type="danger"
+            cancel-button-type="info"
+            @confirm="handleConfirm(row.id)"
+            @cancel="Message({ type: 'info', message: '取消删除' })"
+          >
+            <template #reference>
+              <el-button plain type="danger" size="small">
+                <h-icon class="mr-1" icon="delete" size="14px" />
+                <span>删除</span>
+              </el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
     <el-dialog
-      v-model="dialogVisible"
       title="角色管理"
       width="30%"
+      destroy-on-close
+      v-model="dialogVisible"
       :close-on-click-modal="false"
     >
       <el-form :model="roleForm">
         <el-form-item label="角色名称">
-          <el-input v-model="roleForm.role_name" />
+          <el-input v-model="roleForm.role_name" placeholder="请填写角色名称" />
         </el-form-item>
         <el-form-item label="菜单权限">
           <el-tree

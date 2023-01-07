@@ -2,18 +2,12 @@
 import SideBar from './components/side-bar/index.vue'
 import AppHeader from './components/app-header/index.vue'
 import AppMain from './components/app-main/index.vue'
-import { useMenu } from '@/stores'
-
-const menuStore = useMenu()
 </script>
 
 <template>
   <el-container direction="vertical">
     <el-container direction="horizontal">
-      <el-aside
-        class="translate-all duration-500"
-        :width="menuStore.width + 'px'"
-      >
+      <el-aside class="translate-all duration-500" width="auto">
         <!-- Aside content -->
         <side-bar />
       </el-aside>

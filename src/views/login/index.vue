@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
-import { User, Lock } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
 import { login } from '@/api'
-import { Loading, setToken } from '@/utils'
+import { Loading, setToken, setUser } from '@/utils'
 import router from '@/router'
 import { Message } from '@/utils'
 import type { LoginInfo } from '@/types'
@@ -64,7 +63,8 @@ const handleLogin = async () => {
   })
   const { data, code } = (await login({ data: loginRuleForm })) || {}
   if (code === 200) {
-    setToken(data.access_token)
+    setUser(data.user)
+    setToken(data.token)
     router.push({ path: '/' })
   }
   loading.close()
@@ -89,11 +89,11 @@ const handleChangeCaptcha = () => {
         :rules="rules"
       >
         <el-form-item prop="username">
-          <el-input
-            placeholder="账号"
-            v-model="loginRuleForm.username"
-            :prefix-icon="User"
-          />
+          <el-input placeholder="账号" v-model="loginRuleForm.username">
+            <template #prefix>
+              <h-icon icon="user" size="14px" />
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
@@ -101,8 +101,11 @@ const handleChangeCaptcha = () => {
             type="password"
             show-password
             v-model="loginRuleForm.password"
-            :prefix-icon="Lock"
-          />
+          >
+            <template #prefix>
+              <h-icon icon="lock" size="14px" />
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item prop="code">
           <el-input

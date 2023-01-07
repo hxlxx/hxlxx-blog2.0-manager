@@ -4,7 +4,6 @@ import {} from 'vue'
 
 <template>
   <div>
-    <el-button>upload</el-button>
-    <input type="file" />
+    <div>user-center</div>
   </div>
 </template>

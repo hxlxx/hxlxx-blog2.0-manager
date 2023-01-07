@@ -9,7 +9,6 @@ import {
 import type { ArticleCategory } from '@/types'
 import { Message } from '@/utils'
 import { onBeforeMount, ref } from 'vue'
-import { Plus } from '@element-plus/icons-vue'
 
 const categoryList = ref<ArticleCategory[]>([])
 const dialogVisible = ref<boolean>(false)
@@ -91,7 +90,7 @@ const handleConfirm = async (id: number) => {
         :disabled="!categoryName.length"
         @click="handleAddCategory"
       >
-        <el-icon><Plus /></el-icon>
+        <h-icon class="mr-1" icon="plus" />
         <span>添加分类</span>
       </el-button>
     </div>
@@ -114,11 +113,13 @@ const handleConfirm = async (id: number) => {
       <el-table-column label="操作">
         <template #default="{ row }">
           <el-button
+            plain
             type="primary"
             size="small"
             @click="handleOpenDialog(row.id)"
           >
-            编辑
+            <h-icon class="mr-1" icon="edit" size="14px" />
+            <span>编辑</span>
           </el-button>
           <el-popconfirm
             title="是否确认删除？"
@@ -130,7 +131,10 @@ const handleConfirm = async (id: number) => {
             @cancel="Message({ type: 'info', message: '取消删除' })"
           >
             <template #reference>
-              <el-button type="danger" size="small">删除</el-button>
+              <el-button plain type="danger" size="small">
+                <h-icon class="mr-1" icon="delete" size="14px" />
+                <span>删除</span>
+              </el-button>
             </template>
           </el-popconfirm>
         </template>

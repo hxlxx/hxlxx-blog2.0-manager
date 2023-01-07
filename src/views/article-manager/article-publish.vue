@@ -2,7 +2,6 @@
 import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
 import type { UploadFile } from 'element-plus'
-import { Delete, Plus, ZoomIn } from '@element-plus/icons-vue'
 import {
   ARTICLE_TYPE,
   type Article,
@@ -11,11 +10,11 @@ import {
 } from '@/types'
 import { Message } from '@/utils'
 import {
-  addArticle,
+  createArticle,
   updateArticle,
   getTagList,
   getCategoryList,
-  addDraft,
+  createDraft,
   updateDraft
 } from '@/api'
 import { useRoute, useRouter } from 'vue-router'
@@ -97,10 +96,6 @@ const handlePublishArticle = () => {
   initArticleOptions()
   articleDialogVisible.value = true
 }
-// 关闭对话框
-const beforeCloseDialog = () => {
-  articleDialogVisible.value = false
-}
 // 打开对话框
 const handleOpenDialog = () => {
   articleForm.description = articleForm.description
@@ -154,7 +149,7 @@ const handleSubmitArticle = async () => {
   const article = toRaw(articleForm)
   const { code } =
     (saveOrEdit.value
-      ? await addArticle({ data: article })
+      ? await createArticle({ data: article })
       : await updateArticle({ data: article })) || {}
   if (code === 200) {
     Message({
@@ -177,7 +172,7 @@ const handleSaveOrUpdateAsDraft = async () => {
   const article = toRaw(articleForm)
   const { code } =
     (saveOrEdit.value
-      ? await addDraft({ data: article })
+      ? await createDraft({ data: article })
       : await updateDraft({ data: article })) || {}
   if (code === 200) {
     Message({
@@ -236,7 +231,6 @@ const handleRemoveFile = () => {
       align-center
       destroy-on-close
       v-model="articleDialogVisible"
-      :before-close="beforeCloseDialog"
       @open="handleOpenDialog"
     >
       <el-form :model="articleForm" label-width="80px">
@@ -301,7 +295,7 @@ const handleRemoveFile = () => {
             :limit="1"
             :on-success="handleCoverSuccess"
           >
-            <el-icon><Plus /></el-icon>
+            <h-icon icon="plus" />
             <template #file="{ file }">
               <div>
                 <img
@@ -314,13 +308,13 @@ const handleRemoveFile = () => {
                     class="el-upload-list__item-preview"
                     @click="handlePictureCardPreview(file)"
                   >
-                    <el-icon><zoom-in /></el-icon>
+                    <h-icon icon="zoom-in" />
                   </span>
                   <span
                     class="el-upload-list__item-delete"
                     @click="handleRemoveFile"
                   >
-                    <el-icon><Delete /></el-icon>
+                    <h-icon icon="delete" />
                   </span>
                 </span>
               </div>
