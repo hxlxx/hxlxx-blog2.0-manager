@@ -63,7 +63,9 @@ watch(
     if (newVal) {
       const article = articleStore.getArticle(newVal as string)
       Object.assign(articleForm, article)
-      fileList.value = [{ url: article.cover_url } as any]
+      if (article.cover_url) {
+        fileList.value = [{ url: article.cover_url } as any]
+      }
     } else {
       Object.assign(articleForm, formInitial())
       fileList.value = []
@@ -81,13 +83,13 @@ const initArticleOptions = async () => {
 }
 // 发布文章
 const handlePublishArticle = () => {
-  if (!articleForm.title) {
+  if (!articleForm.title.trim()) {
     return Message({
       type: 'error',
       message: '请先输入文章标题'
     })
   }
-  if (!articleForm.content) {
+  if (!articleForm.content.trim()) {
     return Message({
       type: 'error',
       message: '请先输入文章内容'

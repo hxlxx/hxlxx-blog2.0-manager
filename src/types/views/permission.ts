@@ -6,7 +6,7 @@ export type PermissionMenu = {
 }
 
 export type Role = {
-  id?: number
+  id: number
   created_at?: Date
   updated_at?: Date
   role_name: string

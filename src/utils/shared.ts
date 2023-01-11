@@ -1,3 +1,5 @@
+import { useUser, useNavTags } from '@/stores'
+
 export const formatDataTree = (data: any[]) => {
   if (!data || !Array.isArray(data)) return []
   data.forEach((item) => {
@@ -14,4 +16,11 @@ export const formatDataTree = (data: any[]) => {
       })
   })
   return data.filter((item) => !item.pid)
+}
+
+export const logout = () => {
+  const userStore = useUser()
+  const navTagStore = useNavTags()
+  userStore.clearUser()
+  navTagStore.initNavTag()
 }

@@ -138,7 +138,7 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
       :cell-style="{ 'text-align': 'center' }"
     >
       <el-table-column prop="id" label="文章编号" width="100" />
-      <el-table-column label="文章封面" width="160">
+      <el-table-column label="文章封面" width="160px">
         <template #default="{ row }">
           <el-image
             style="width: 120px; height: 80px; border-radius: 5px"
@@ -148,14 +148,14 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
         </template>
       </el-table-column>
       <el-table-column prop="title" label="文章标题" />
-      <el-table-column label="文章类型" width="120">
+      <el-table-column label="文章类型" width="120px">
         <template #default="{ row }">
           <el-tag v-if="row.article_type">
             {{ article_type(row.article_type) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="文章分类" width="120">
+      <el-table-column label="文章分类" width="120px">
         <template #default="{ row }">
           <el-tag v-if="row.category">{{ row.category.category_name }}</el-tag>
         </template>
@@ -174,13 +174,13 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="发布时间" width="160">
+      <el-table-column label="发布时间" width="160px">
         <template #default="{ row }">
           <h-icon icon="time" />
           {{ dateFormat(row.created_at).format('YYYY-MM-DD') }}
         </template>
       </el-table-column>
-      <el-table-column label="置顶" width="100">
+      <el-table-column label="置顶" width="100px">
         <template #default="{ row }">
           <el-switch
             v-model="row.top"
@@ -188,7 +188,7 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
           />
         </template>
       </el-table-column>
-      <el-table-column label="推荐" width="100">
+      <el-table-column label="推荐" width="100px">
         <template #default="{ row }">
           <el-switch
             v-model="row.recommend"
@@ -196,7 +196,7 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
           />
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="200px">
         <template #default="{ row }">
           <el-button
             plain

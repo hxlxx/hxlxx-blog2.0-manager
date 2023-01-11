@@ -87,7 +87,7 @@ const handleConfirm = async (id: number) => {
       <el-button
         type="primary"
         class="ml-3"
-        :disabled="!categoryName.length"
+        :disabled="!categoryName.trim()"
         @click="handleAddCategory"
       >
         <h-icon class="mr-1" icon="plus" />

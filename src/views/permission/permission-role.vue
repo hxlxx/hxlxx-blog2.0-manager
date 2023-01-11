@@ -18,7 +18,7 @@ const elTreeProps = {
   children: 'children'
 }
 const formInitial = () => ({
-  id: undefined,
+  id: 0,
   role_name: '',
   permission_menu: []
 })
@@ -72,11 +72,18 @@ const handleCheckChange = (data: PermissionMenu, checked: boolean) => {
       (item) => item !== data.id
     )
   }
-  roleForm.permission_menu = elTreeRef.value!.getCheckedKeys() as number[]
+  // 子节点为有效权限
+  roleForm.permission_menu = elTreeRef.value!.getCheckedKeys(true) as number[]
 }
 // 提交修改
 const handleSubmitMenuPermission = async () => {
   const role = toRaw(roleForm)
+  if (!role.role_name.trim()) {
+    return Message({
+      type: 'error',
+      message: '请填写角色名称！'
+    })
+  }
   const { code } =
     (isEdit.value
       ? await updateRolePermission({ data: role })

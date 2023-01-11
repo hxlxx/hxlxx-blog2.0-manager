@@ -2,10 +2,13 @@
 import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import type { FormRules } from 'element-plus'
 import { login } from '@/api'
-import { Loading, setToken, setUser } from '@/utils'
+import { Loading } from '@/utils'
 import router from '@/router'
 import { Message } from '@/utils'
 import type { LoginInfo } from '@/types'
+import { useUser } from '@/stores'
+
+const userStore = useUser()
 
 const loginRuleForm = reactive<LoginInfo>({
   username: '',
@@ -63,8 +66,8 @@ const handleLogin = async () => {
   })
   const { data, code } = (await login({ data: loginRuleForm })) || {}
   if (code === 200) {
-    setUser(data.user)
-    setToken(data.token)
+    userStore.setUser(data.user)
+    userStore.setToken(data.token)
     router.push({ path: '/' })
   }
   loading.close()
@@ -113,12 +116,16 @@ const handleChangeCaptcha = () => {
             v-model="loginRuleForm.code"
             class="code"
           />
-          <img
-            class="ml-[10px] rounded-md cursor-pointer"
-            title="看不清？点击切换下一张"
-            :src="captchaUrl"
+          <div
+            class="w-[100px] h-8 ml-1 cursor-pointer"
             @click="handleChangeCaptcha"
-          />
+          >
+            <el-image
+              fit="cover"
+              class="w-full h-full rounded"
+              :src="captchaUrl"
+            />
+          </div>
         </el-form-item>
         <el-button type="primary" class="w-[100%]" @click="handleLogin">
           登录

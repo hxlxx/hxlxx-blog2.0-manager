@@ -1,4 +1,4 @@
-import { getToken } from '@/utils'
+import { useUser } from '@/stores'
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from './routes'
 
@@ -9,7 +9,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.path.indexOf('login') === -1) {
-    const token = getToken()
+    const userStore = useUser()
+    const token = userStore.getToken()
     if (token) {
       next()
     } else {

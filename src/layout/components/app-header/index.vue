@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { useMenu, useNavTags } from '@/stores'
+import { useArticle, useMenu, useNavTags, useUser } from '@/stores'
 import type { NavTag } from '@/types'
-import { clearToken, getUser } from '@/utils'
+import { logout } from '@/utils'
 import { ref, watch, onBeforeMount } from 'vue'
 import { useRouter, useRoute, type RouteRecord } from 'vue-router'
+import { useDark, useToggle } from '@vueuse/core'
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUser()
 const navTagStore = useNavTags()
 const menuStore = useMenu()
+const articleStore = useArticle()
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 
 const tags = ref<NavTag[]>([])
 const breadcrumbs = ref<RouteRecord[]>([])
@@ -16,7 +21,7 @@ const user = ref<any>()
 
 onBeforeMount(() => {
   tags.value = navTagStore.navTags
-  user.value = getUser()
+  user.value = userStore.getUser()
 })
 
 watch(
@@ -37,15 +42,18 @@ watch(
     navTagStore.setNavTag(tag)
   }
 )
+
 // 折叠菜单
 const handleCollapseMenu = () => {
   menuStore.setMenuCollapse(!menuStore.collapse)
 }
 // 关闭标签
 const handleCloseTag = (tag: NavTag, index: number) => {
-  const reg = /article\/\w+$/
-  if (reg.test(tag.path)) {
-    sessionStorage.removeItem('article')
+  const reg = /article\/(\w+)$/
+  const res = tag.path.match(reg)
+  if (res) {
+    const id = res[1]
+    articleStore.clearArticleById(id)
   }
   navTagStore.removeNavTag(tag.path, tag.active)
   if (tag.active && index > 0) {
@@ -61,6 +69,7 @@ const handleClickTag = (tag: NavTag) => {
 // 关闭所有标签
 const handleCloseAllNavTag = () => {
   navTagStore.initNavTag()
+  articleStore.clearArticle()
   router.push({ path: '/' })
 }
 // 用户中心
@@ -69,7 +78,7 @@ const handleToUserCenter = () => {
 }
 // 退出登录
 const handleLogout = () => {
-  clearToken()
+  logout()
   router.push({ path: '/login' })
 }
 </script>
@@ -91,16 +100,17 @@ const handleLogout = () => {
             {{ route.meta.title }}
           </el-breadcrumb-item>
         </el-breadcrumb>
+        <el-button @click="toggleDark()"> 切换主题 </el-button>
         <el-dropdown class="ml-[auto]">
           <el-avatar class="mr-3" :size="40" :src="user.avatar_url" />
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="handleToUserCenter"
-                >用户中心</el-dropdown-item
-              >
-              <el-dropdown-item @click="handleLogout"
-                >退出登录</el-dropdown-item
-              >
+              <el-dropdown-item @click="handleToUserCenter">
+                用户中心
+              </el-dropdown-item>
+              <el-dropdown-item @click="handleLogout">
+                退出登录
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

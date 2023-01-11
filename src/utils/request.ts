@@ -1,8 +1,9 @@
 import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import type { ResponseData } from '@/types'
-import { clearToken, getToken, Message, MessageBox, Notify } from '@/utils'
+import { logout, Message, MessageBox, Notify } from '@/utils'
 import router from '@/router'
+import { useUser } from '@/stores'
 
 class HttpRequest {
   baseURL: string
@@ -13,8 +14,7 @@ class HttpRequest {
   // 防止多次显示提示框
   flag: boolean
   constructor() {
-    this.baseURL =
-      import.meta.env.MODE === 'production' ? import.meta.env.BASE_URL : ''
+    this.baseURL = import.meta.env.VITE_BASE_URL
     this.timeout = 3000
     // 正在进行请求的请求列表
     this.queue = {}
@@ -24,7 +24,8 @@ class HttpRequest {
   setInterceptors(instance: AxiosInstance, url: string) {
     instance.interceptors.request.use((config: AxiosRequestConfig) => {
       if (url.indexOf('login') === -1) {
-        config.headers!['Authorization'] = getToken()
+        const userStore = useUser()
+        config.headers!['Authorization'] = userStore.getToken()
       }
 
       if (!Object.keys(this.queue).length) {
@@ -90,7 +91,7 @@ class HttpRequest {
               type: 'error',
               message: '身份已过期，请重新登录！',
               callback: () => {
-                clearToken()
+                logout()
                 router.push({ path: '/login' })
                 this.flag = true
               }
@@ -101,6 +102,12 @@ class HttpRequest {
             title: '操作失败',
             type: 'error',
             message: '权限不足！'
+          })
+        } else if (error.data.code === 418) {
+          Notify({
+            title: '登录失败',
+            type: 'error',
+            message: '该用户已被禁止登录！'
           })
         } else {
           Message({

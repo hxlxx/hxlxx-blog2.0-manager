@@ -16,6 +16,7 @@ const menuDialogVisible = ref<boolean>(false)
 const menuSelectorVisible = ref<boolean>(false)
 const tabsActiveName = ref<string>('first')
 const formInitial = () => ({
+  id: 0,
   pid: undefined,
   label: '',
   path: '',
@@ -65,6 +66,22 @@ const handleChangeTab = (name: TabPaneName) => {
 // 提交或更新菜单
 const handleSubmitMenu = async () => {
   const menu = toRaw(menuForm)
+  if (!menu.label.trim()) {
+    return Message({
+      type: 'error',
+      message: '请填写菜单名称！'
+    })
+  } else if (!menu.path.trim()) {
+    return Message({
+      type: 'error',
+      message: '请填写菜单路径！'
+    })
+  } else if (!menu.icon.trim()) {
+    return Message({
+      type: 'error',
+      message: '请填写菜单图标！'
+    })
+  }
   const { code } =
     (isEdit.value
       ? await updateMenu({ data: menu })

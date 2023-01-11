@@ -14,10 +14,15 @@ export const useArticle = defineStore('article', {
     },
     getArticle(id: string) {
       return this.articleMap[id]
+    },
+    clearArticle() {
+      this.articleMap = {}
+    },
+    clearArticleById(id: string) {
+      this.articleMap[id] = {} as Article
     }
   },
   persist: {
-    paths: ['articleMap'],
     storage: sessionStorage
   }
 })
