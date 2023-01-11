@@ -7,7 +7,7 @@
     overflow-y: auto;
   }
   .scrollbar-custom::-webkit-scrollbar {
-    width: 10px;
+    width: 6px;
     background-color: #eee;
   }
   .scrollbar-custom::-webkit-scrollbar-thumb {

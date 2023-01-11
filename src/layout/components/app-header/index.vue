@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useArticle, useMenu, useNavTags, useUser } from '@/stores'
-import type { NavTag } from '@/types'
-import { logout } from '@/utils'
 import { ref, watch, onBeforeMount } from 'vue'
+import { useArticle, useMenu, useNavTags, useUser } from '@/stores'
 import { useRouter, useRoute, type RouteRecord } from 'vue-router'
-import { useDark, useToggle } from '@vueuse/core'
+import type { NavTag, User } from '@/types'
+import { logout } from '@/utils'
+import ToggleDark from '@/components/toggle-theme/index.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -12,12 +12,10 @@ const userStore = useUser()
 const navTagStore = useNavTags()
 const menuStore = useMenu()
 const articleStore = useArticle()
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
 
 const tags = ref<NavTag[]>([])
 const breadcrumbs = ref<RouteRecord[]>([])
-const user = ref<any>()
+const user = ref<User>({} as User)
 
 onBeforeMount(() => {
   tags.value = navTagStore.navTags
@@ -84,7 +82,7 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <el-page-header class="py-1">
+  <el-page-header class="py-1 px-2">
     <template #breadcrumb>
       <div class="flex items-center pl-1">
         <div
@@ -100,26 +98,36 @@ const handleLogout = () => {
             {{ route.meta.title }}
           </el-breadcrumb-item>
         </el-breadcrumb>
-        <el-button @click="toggleDark()"> 切换主题 </el-button>
-        <el-dropdown class="ml-[auto]">
-          <el-avatar class="mr-3" :size="40" :src="user.avatar_url" />
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="handleToUserCenter">
-                用户中心
-              </el-dropdown-item>
-              <el-dropdown-item @click="handleLogout">
-                退出登录
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <div class="ml-[auto] mr-3 flex gap-4 items-center">
+          <span>{{ user.username }}</span>
+          <toggle-dark />
+          <full-screen />
+          <el-dropdown>
+            <el-avatar
+              class="transition-all duration-200 hover:shadow-[0_0_5px_#333]"
+              :size="40"
+              :src="user.avatar_url"
+            />
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="handleToUserCenter">
+                  用户中心
+                </el-dropdown-item>
+                <el-dropdown-item @click="handleLogout">
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </div>
     </template>
   </el-page-header>
-  <div class="flex items-center py-1 border-t border-b-[#dcdfe6]">
+  <div
+    class="flex flex-wrap items-center py-1 px-2 border-t border-b-[#dcdfe6]"
+  >
     <el-tag
-      class="mx-1"
+      class="mx-1 my-[1px]"
       type="success"
       v-for="(tag, index) in tags"
       :key="tag.path"
@@ -146,9 +154,9 @@ const handleLogout = () => {
         {{ tag.tag_name }}
       </div>
     </el-tag>
-    <el-button class="ml-[auto]" size="small" @click="handleCloseAllNavTag"
-      >关闭全部</el-button
-    >
+    <el-button class="ml-[auto]" size="small" @click="handleCloseAllNavTag">
+      关闭全部
+    </el-button>
   </div>
 </template>
 

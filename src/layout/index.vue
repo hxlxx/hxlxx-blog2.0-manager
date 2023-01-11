@@ -5,14 +5,22 @@ import AppMain from './components/app-main/index.vue'
 </script>
 
 <template>
-  <el-container direction="vertical">
+  <el-container class="h-full" direction="vertical">
     <el-container direction="horizontal">
-      <el-aside class="translate-all duration-500" width="auto">
+      <el-aside
+        width="auto"
+        class="shadow-md"
+        style="background-color: var(--el-bg-color-overlay)"
+      >
         <!-- Aside content -->
         <side-bar />
       </el-aside>
-      <el-container direction="vertical" class="bg-gray-100">
-        <el-header height="auto" class="bg-white shadow-md">
+      <el-container direction="vertical">
+        <el-header
+          height="auto"
+          class="shadow-md p-0 ml-[10px]"
+          style="background-color: var(--el-bg-color-overlay)"
+        >
           <!-- Header content -->
           <app-header />
         </el-header>

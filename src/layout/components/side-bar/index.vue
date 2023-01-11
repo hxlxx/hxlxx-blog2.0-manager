@@ -26,7 +26,7 @@ const initMenuList = async () => {
 </script>
 
 <template>
-  <div class="h-screen border-r scrollbar-custom">
+  <div>
     <el-menu
       router
       mode="vertical"
