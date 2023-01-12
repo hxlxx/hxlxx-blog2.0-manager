@@ -20,4 +20,5 @@ export type QueryInfo = {
   limit?: number
   page?: number
   total?: number
+  keyword?: string
 }

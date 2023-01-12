@@ -1,3 +1,7 @@
+:root {
+  --primary-bg-color: #818cf8;
+  --second-bg-color: #ec4899;
+}
 html {
   height: 100%;
 }
@@ -15,8 +19,12 @@ body::-webkit-scrollbar {
   background-color: #eee;
 }
 body::-webkit-scrollbar-thumb {
-  background-image: linear-gradient(180deg, #d0368a, #708ad4);
-  box-shadow: inset 2px 2px 5px 0 rgba(#000, 0.5);
+  background-image: linear-gradient(
+    180deg,
+    var(--second-bg-color),
+    var(--primary-bg-color)
+  );
+  box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
   border-radius: 100px;
 }
 .el-message {

@@ -3,12 +3,13 @@ import {
   getArticleList,
   getArticleById,
   updateArticleTop,
-  updateArticleRecommend
+  updateArticleRecommend,
+  searchArticle
 } from '@/api'
 import { useArticle } from '@/stores'
 import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
 import { Message } from '@/utils'
-import { onBeforeMount, ref, reactive } from 'vue'
+import { onBeforeMount, ref, reactive, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -19,12 +20,29 @@ const query = reactive<QueryInfo>({
   skip: 0,
   limit: 10,
   page: 1,
-  total: 0
+  total: 0,
+  keyword: ''
 })
 const articleStatus = ref<ARTICLE_STATUS>(ARTICLE_STATUS.PUBLISHED)
 const loading = ref<boolean>(false)
 
+const article_type = (type: string) => {
+  switch (type) {
+    case 'original':
+      return '原创'
+    case 'reproduce':
+      return '转载'
+    case 'translate':
+      return '翻译'
+    default:
+      return ''
+  }
+}
+
 onBeforeMount(() => {
+  initArticleList()
+})
+onActivated(() => {
   initArticleList()
 })
 // 初始化文章列表
@@ -39,22 +57,10 @@ const initArticleList = async () => {
   query.total = data?.count
   loading.value = false
 }
-const article_type = (type: string) => {
-  switch (type) {
-    case 'original':
-      return '原创'
-    case 'reproduce':
-      return '转载'
-    case 'translate':
-      return '翻译'
-    default:
-      return ''
-  }
-}
 // 切换分页
 const handleChangePage = (page: number) => {
   query.page = page
-  initArticleList()
+  query.keyword ? handleSearchArticle() : initArticleList()
 }
 // 已发布
 const handleShowPublishedArticle = () => {
@@ -105,11 +111,19 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
   }
   loading.value = false
 }
+// 搜索文章
+const handleSearchArticle = async () => {
+  loading.value = true
+  const { data } = (await searchArticle(query)) || {}
+  articleList.value = data?.res
+  query.total = data?.count
+  loading.value = false
+}
 </script>
 
 <template>
   <div>
-    <div class="mb-3">
+    <div class="flex items-center mb-3">
       <el-button
         plain
         type="primary"
@@ -126,6 +140,18 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
       >
         草稿
       </el-button>
+      <div class="flex items-center gap-2 ml-auto">
+        <el-input v-model="query.keyword" placeholder="搜索文章" />
+        <el-button
+          plain
+          type="primary"
+          :disabled="!query.keyword?.trim().length"
+          @click="handleSearchArticle"
+        >
+          <h-icon class="mr-1" icon="search" />
+          搜索
+        </el-button>
+      </div>
     </div>
     <el-table
       border

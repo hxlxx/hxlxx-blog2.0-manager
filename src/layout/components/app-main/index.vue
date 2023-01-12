@@ -45,7 +45,11 @@ const route = useRoute()
   content: '';
   width: 8px;
   height: 65px;
-  background-image: linear-gradient(180deg, #d0368a, #708ad4);
+  background-image: linear-gradient(
+    180deg,
+    var(--second-bg-color),
+    var(--primary-bg-color)
+  );
   border-radius: 4px;
 }
 </style>
