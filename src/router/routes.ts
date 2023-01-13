@@ -124,6 +124,20 @@ export const routes = [
     ]
   },
   {
+    path: '/log',
+    redirect: '/log/operation',
+    component: Layout,
+    meta: '日志管理',
+    children: [
+      {
+        path: '/operation',
+        name: 'log-operation',
+        component: () => import('@/views/log/log-operation.vue'),
+        meta: { title: '操作日志', activePath: '/log/operation' }
+      }
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/404'
   }
