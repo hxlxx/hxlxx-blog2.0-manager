@@ -5,21 +5,22 @@ import type {
   QueryInfo
 } from '@/types'
 import request from '@/utils'
+import type { AxiosRequestConfig } from 'axios'
 
 //文章
-export const createArticle = (options: any) => {
+export const createArticle = (options: AxiosRequestConfig) => {
   return request.post('/article', options)
 }
 // 创建草稿
-export const createDraft = (options: any) => {
+export const createDraft = (options: AxiosRequestConfig) => {
   return request.post('/article/draft', options)
 }
 // 更新文章
-export const updateArticle = (options: any) => {
+export const updateArticle = (options: AxiosRequestConfig) => {
   return request.patch('/article', options)
 }
 // 更新草稿
-export const updateDraft = (options: any) => {
+export const updateDraft = (options: AxiosRequestConfig) => {
   return request.patch('/article/draft', options)
 }
 // 获取文章列表，带分页
@@ -46,10 +47,10 @@ export const searchArticle = (query?: QueryInfo) => {
   )
 }
 // 修改文章置顶和推荐状态
-export const updateArticleTop = (options: any) => {
+export const updateArticleTop = (options: AxiosRequestConfig) => {
   return request.patch('/article/top', options)
 }
-export const updateArticleRecommend = (options: any) => {
+export const updateArticleRecommend = (options: AxiosRequestConfig) => {
   return request.patch('/article/recommend', options)
 }
 
@@ -70,8 +71,11 @@ export const createCategory = (category_name: string) => {
     data: { category_name }
   })
 }
-export const removeCategoryById = (id: number) => {
-  return request.delete(`/category/${id}`)
+export const removeCategoryById = (options: AxiosRequestConfig) => {
+  return request.delete('/category/remove-one', options)
+}
+export const removeCategoryByIds = (options: AxiosRequestConfig) => {
+  return request.delete('/category/remove-all', options)
 }
 
 // 文章标签
@@ -91,6 +95,9 @@ export const createTag = (tag_name: string) => {
     data: { tag_name }
   })
 }
-export const removeTagById = (id: number) => {
-  return request.delete(`/tag/${id}`)
+export const removeTagById = (options: AxiosRequestConfig) => {
+  return request.delete('/tag/remove-one', options)
+}
+export const removeTagByIds = (options: AxiosRequestConfig) => {
+  return request.delete('/tag/remove-all', options)
 }

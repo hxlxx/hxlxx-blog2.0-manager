@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw, onMounted } from 'vue'
+import { ref, reactive, toRaw, onBeforeMount } from 'vue'
 import type { Menu } from '@/types'
 import {
   createMenu,
@@ -9,7 +9,7 @@ import {
   updateMenuVisible,
   getMenuList
 } from '@/api'
-import { formatDataTree, Message } from '@/utils'
+import { formatMenuTree, Message } from '@/utils'
 import type { TabPaneName } from 'element-plus'
 
 const menuDialogVisible = ref<boolean>(false)
@@ -30,14 +30,14 @@ const isSub = ref<boolean>(true)
 const isEdit = ref<boolean>(false)
 const loading = ref<boolean>(false)
 
-onMounted(() => {
+onBeforeMount(() => {
   initMenuList()
 })
 
 const initMenuList = async () => {
   loading.value = true
   const { data } = (await getMenuList()) || {}
-  menuList.value = formatDataTree(data)
+  menuList.value = formatMenuTree(data)
   loading.value = false
 }
 

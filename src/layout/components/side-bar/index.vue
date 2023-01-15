@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { getMenuList } from '@/api'
 import type { Menu } from '@/types'
 import { ref, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { formatDataTree } from '@/utils'
-import { useMenu } from '@/stores'
+import { getVisibleMenu } from '@/utils'
+import { useMenu, useUser } from '@/stores'
 
 const route = useRoute()
 const menuStore = useMenu()
+const userStore = useUser()
 
 const menuList = ref<Menu[]>([])
 
@@ -20,8 +20,8 @@ onBeforeMount(() => {
 })
 
 const initMenuList = async () => {
-  const { data } = (await getMenuList()) || {}
-  menuList.value = formatDataTree(data)
+  await menuStore.getMenuList()
+  menuList.value = getVisibleMenu(menuStore.menuList, userStore.user.role)
 }
 </script>
 

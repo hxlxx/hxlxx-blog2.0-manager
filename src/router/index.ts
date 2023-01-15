@@ -1,5 +1,7 @@
-import { useUser } from '@/stores'
+import { useMenu, useUser } from '@/stores'
+import { mergeAsyncRoutes } from '@/utils'
 import { createRouter, createWebHistory } from 'vue-router'
+import { asyncRoutes } from './asyncRoutes'
 import { routes } from './routes'
 
 const router = createRouter({
@@ -7,17 +9,34 @@ const router = createRouter({
   routes
 })
 
+let newRoutes = []
 router.beforeEach((to, from, next) => {
-  if (to.path.indexOf('login') === -1) {
-    const userStore = useUser()
-    const token = userStore.getToken()
-    if (token) {
+  const userStore = useUser()
+  const menuStore = useMenu()
+  const token = userStore.getToken()
+  if (token) {
+    if (to.path === '/login') {
+      next('/home')
+    }
+    if (newRoutes.length) {
+      next()
+    } else {
+      newRoutes = mergeAsyncRoutes(
+        menuStore.menuList,
+        asyncRoutes,
+        userStore.user.role
+      )
+      newRoutes.forEach((route) => {
+        router.addRoute(route)
+      })
+      next({ ...to, replace: true })
+    }
+  } else {
+    if (to.path === '/login') {
       next()
     } else {
       next('/login')
     }
-  } else {
-    next()
   }
 })
 

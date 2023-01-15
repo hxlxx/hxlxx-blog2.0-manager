@@ -4,11 +4,21 @@ import {
   type ElMessageBoxOptions,
   type MessageProps
 } from 'element-plus'
+import type { AppContext } from 'vue'
 
 export const Message = (options: Partial<MessageProps>) => {
-  return ElMessage(options)
+  ElMessage(options)
 }
 
-export const MessageBox = (options: Partial<ElMessageBoxOptions>) => {
-  return ElMessageBox(options)
+export const MessageBox = (options: ElMessageBoxOptions) => {
+  ElMessageBox(options)
+}
+
+export const Confirm = (
+  message: ElMessageBoxOptions['message'],
+  title: ElMessageBoxOptions['title'],
+  options?: ElMessageBoxOptions,
+  appContext?: AppContext | null
+) => {
+  return ElMessageBox.confirm(message, title, options, appContext)
 }

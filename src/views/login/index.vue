@@ -3,12 +3,15 @@ import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import type { FormRules } from 'element-plus'
 import { login } from '@/api'
 import { Loading } from '@/utils'
-import router from '@/router'
 import { Message } from '@/utils'
 import type { LoginInfo } from '@/types'
-import { useUser } from '@/stores'
+import { useUser, useMenu } from '@/stores'
+import { loginRules } from './rules'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const userStore = useUser()
+const menuStore = useMenu()
 
 const loginRuleForm = reactive<LoginInfo>({
   username: '',
@@ -17,21 +20,7 @@ const loginRuleForm = reactive<LoginInfo>({
 })
 const baseUrl = '/api/captcha'
 const captchaUrl = ref<string>(`${baseUrl}?${Math.random()}`)
-
-const rules = reactive<FormRules>({
-  username: [
-    { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 5, max: 30, message: '账号长度在5 - 30位', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在6 - 20位', trigger: 'blur' }
-  ],
-  code: [
-    { required: true, message: '请输入验证码', trigger: 'blur' },
-    { min: 4, max: 4, message: '验证码格式错误', trigger: 'blur' }
-  ]
-})
+const rules = reactive<FormRules>(loginRules)
 
 // 回车登录
 const handleEnter = (e: KeyboardEvent) => {
@@ -68,7 +57,12 @@ const handleLogin = async () => {
   if (code === 200) {
     userStore.setUser(data.user)
     userStore.setToken(data.token)
+    await menuStore.getMenuList()
     router.push({ path: '/' })
+    Message({
+      type: 'success',
+      message: '登录成功！'
+    })
   }
   loading.close()
 }

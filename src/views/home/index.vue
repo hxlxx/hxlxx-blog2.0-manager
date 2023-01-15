@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import TagCloud from 'TagCloud'
 import { getTagList, getSiteInfo } from '@/api'
 
 const containerRef = ref<HTMLElement>()
 
-onMounted(() => {
+onBeforeMount(() => {
   initTagList()
 })
 

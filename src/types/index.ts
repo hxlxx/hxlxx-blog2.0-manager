@@ -7,6 +7,7 @@ export * from './views/menu'
 export * from './views/login'
 export * from './views/permission'
 export * from './views/user'
+export * from './views/log'
 
 export type ResponseData = {
   code: number
@@ -16,9 +17,9 @@ export type ResponseData = {
 }
 
 export type QueryInfo = {
+  page?: number
   skip?: number
   limit?: number
-  page?: number
   total?: number
   keyword?: string
 }

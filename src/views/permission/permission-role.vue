@@ -8,7 +8,7 @@ import {
   removeRoleById
 } from '@/api'
 import type { PermissionMenu, Role } from '@/types'
-import { formatDataTree, Message } from '@/utils'
+import { formatMenuTree, Message } from '@/utils'
 import type { ElTree } from 'element-plus'
 
 const roleList = ref<Role[]>([])
@@ -37,7 +37,7 @@ const initRoleList = async () => {
   const { data: roles } = (await getRoleList()) || {}
   const { data: menus } = (await getPermissionMenu()) || {}
   roleList.value = roles
-  menu.value = formatDataTree(menus)
+  menu.value = formatMenuTree(menus)
   loading.value = false
 }
 // 打开对话框

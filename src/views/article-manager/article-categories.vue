@@ -4,10 +4,12 @@ import {
   getCategoryById,
   getCategoryList,
   removeCategoryById,
-  updateCategoryById
+  updateCategoryById,
+  removeCategoryByIds
 } from '@/api'
 import type { ArticleCategory } from '@/types'
-import { Message } from '@/utils'
+import { Confirm, Message } from '@/utils'
+import type { Action } from 'element-plus'
 import { onBeforeMount, ref } from 'vue'
 
 const categoryList = ref<ArticleCategory[]>([])
@@ -16,6 +18,7 @@ const category = ref<ArticleCategory>({ id: 0, category_name: '' })
 const memo = ref<string>('')
 const isChanged = ref<boolean>(false)
 const categoryName = ref<string>('')
+const selectedItems = ref<ArticleCategory[]>([])
 const loading = ref<boolean>(false)
 
 onBeforeMount(() => {
@@ -69,7 +72,7 @@ const handleSubmitCategory = async () => {
 }
 // 确认删除
 const handleConfirm = async (id: number) => {
-  const { code } = (await removeCategoryById(id)) || {}
+  const { code } = (await removeCategoryById({ data: { id } })) || {}
   if (code === 200) {
     Message({
       type: 'success',
@@ -78,21 +81,59 @@ const handleConfirm = async (id: number) => {
     initCategoryList()
   }
 }
+// 表格多选
+const handleSelectionChange = (category: ArticleCategory[]) => {
+  selectedItems.value = category
+}
+// 删除所有选中项
+const handleRemoveAllSelected = () => {
+  const ids = selectedItems.value.map((item) => item.id)
+  Confirm('是否确定删除选中项？', '批量删除', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消'
+  })
+    .then(async () => {
+      const { code } = (await removeCategoryByIds({ data: { ids } })) || {}
+      if (code === 200) {
+        Message({
+          type: 'success',
+          message: '批量删除成功！'
+        })
+        initCategoryList()
+      }
+    })
+    .catch((action: Action) => {
+      Message({
+        type: action === 'cancel' ? 'info' : 'success',
+        message: action === 'cancel' ? '已取消删除' : '批量删除成功！'
+      })
+    })
+}
 </script>
 
 <template>
   <div>
-    <div class="w-80 flex mb-3">
-      <el-input placeholder="请输入分类名称" v-model="categoryName" />
+    <div class="flex mb-3">
       <el-button
-        type="primary"
-        class="ml-3"
-        :disabled="!categoryName.trim()"
-        @click="handleAddCategory"
+        type="danger"
+        :disabled="selectedItems.length === 0"
+        @click="handleRemoveAllSelected"
       >
-        <h-icon class="mr-1" icon="plus" />
-        <span>添加分类</span>
+        <h-icon class="mr-1" icon="delete-three" />
+        批量删除
       </el-button>
+      <div class="flex ml-auto">
+        <el-input placeholder="请输入分类名称" v-model="categoryName" />
+        <el-button
+          type="primary"
+          class="ml-3"
+          :disabled="!categoryName.trim()"
+          @click="handleAddCategory"
+        >
+          <h-icon class="mr-1" icon="plus" />
+          <span>添加分类</span>
+        </el-button>
+      </div>
     </div>
     <el-table
       border
@@ -103,6 +144,7 @@ const handleConfirm = async (id: number) => {
         'text-align': 'center'
       }"
       :cell-style="{ 'text-align': 'center' }"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column label="分类名称">

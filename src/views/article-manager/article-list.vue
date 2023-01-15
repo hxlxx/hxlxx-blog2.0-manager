@@ -58,8 +58,7 @@ const initArticleList = async () => {
   loading.value = false
 }
 // 切换分页
-const handleChangePage = (page: number) => {
-  query.page = page
+const handleChangePage = () => {
   query.keyword ? handleSearchArticle() : initArticleList()
 }
 // 已发布
@@ -141,7 +140,7 @@ const handleSearchArticle = async () => {
         草稿
       </el-button>
       <div class="flex items-center gap-2 ml-auto">
-        <el-input v-model="query.keyword" placeholder="搜索文章" />
+        <el-input v-model="query.keyword" placeholder="搜索文章" clearable />
         <el-button
           plain
           type="primary"
@@ -247,9 +246,10 @@ const handleSearchArticle = async () => {
     </el-table>
     <div class="w-full flex justify-center mt-3">
       <el-pagination
+        v-model:current-page="query.page"
         background
-        layout="prev, pager, next"
-        hide-on-single-page
+        layout="prev, pager, next, total"
+        :pager-count="5"
         :page-size="query.limit"
         :total="query.total"
         @current-change="handleChangePage"
