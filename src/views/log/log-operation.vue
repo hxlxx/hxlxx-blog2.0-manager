@@ -2,6 +2,7 @@
 import { onBeforeMount, ref, reactive } from 'vue'
 import {
   getOperationLog,
+  getOperationLogById,
   removeOperationLogById,
   removeOperationLogByIds
 } from '@/api'
@@ -53,9 +54,10 @@ const handleSelectionChange = (logs: OperationLog[]) => {
   selectedItems.value = logs
 }
 // 查看详情
-const handleOpenDetail = (log: OperationLog) => {
+const handleOpenDetail = async (id: number) => {
+  const { data } = (await getOperationLogById(id)) || {}
+  logDetail.value = data
   dialogVisible.value = true
-  logDetail.value = log
 }
 // 确认删除
 const handleConfirm = async (id: number) => {
@@ -166,7 +168,7 @@ const handleCurrentChange = () => {
             plain
             type="primary"
             size="small"
-            @click="handleOpenDetail(row)"
+            @click="handleOpenDetail(row.id)"
           >
             <h-icon class="mr-1" icon="view-grid-detail" size="14px" />
             <span>查看详情</span>
@@ -220,6 +222,10 @@ const handleCurrentChange = () => {
       <el-row :gutter="20">
         <el-col :span="6"><strong>请求参数</strong></el-col>
         <el-col :span="18">{{ logDetail!.parameter }}</el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="6"><strong>响应数据</strong></el-col>
+        <el-col :span="18">{{ logDetail!.response }}</el-col>
       </el-row>
     </el-dialog>
     <div class="w-full flex justify-center mt-3">

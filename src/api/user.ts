@@ -1,4 +1,4 @@
-import request from '@/utils'
+import { request } from '@/utils'
 import type { AxiosRequestConfig } from 'axios'
 
 export const login = (options: AxiosRequestConfig) => {

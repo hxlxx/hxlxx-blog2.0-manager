@@ -9,7 +9,7 @@ import {
 import { useArticle } from '@/stores'
 import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
 import { Message } from '@/utils'
-import { onBeforeMount, ref, reactive, onActivated } from 'vue'
+import { onBeforeMount, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -40,9 +40,6 @@ const article_type = (type: string) => {
 }
 
 onBeforeMount(() => {
-  initArticleList()
-})
-onActivated(() => {
   initArticleList()
 })
 // 初始化文章列表

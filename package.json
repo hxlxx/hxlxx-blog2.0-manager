@@ -16,6 +16,7 @@
     "TagCloud": "^2.3.2",
     "axios": "^1.2.1",
     "dayjs": "^1.11.7",
+    "echarts": "^5.4.1",
     "element-plus": "^2.2.26",
     "lottie-web": "^5.10.0",
     "md-editor-v3": "^2.6.0",

@@ -1,6 +1,6 @@
 :root {
-  --primary-bg-color: #818cf8;
-  --second-bg-color: #ec4899;
+  --primary-bg-color: rgb(129, 140, 248);
+  --second-bg-color: rgb(236, 72, 153);
 }
 html {
   height: 100%;

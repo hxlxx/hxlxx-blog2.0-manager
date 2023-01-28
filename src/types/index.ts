@@ -8,6 +8,7 @@ export * from './views/login'
 export * from './views/permission'
 export * from './views/user'
 export * from './views/log'
+export * from './views/home'
 
 export type ResponseData = {
   code: number

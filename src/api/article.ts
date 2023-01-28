@@ -4,7 +4,7 @@ import type {
   ARTICLE_STATUS,
   QueryInfo
 } from '@/types'
-import request from '@/utils'
+import { request } from '@/utils'
 import type { AxiosRequestConfig } from 'axios'
 
 //文章
@@ -29,6 +29,10 @@ export const getArticleList = (type?: ARTICLE_STATUS, query?: QueryInfo) => {
     query?.skip || 0
   }&limit=${query?.limit || 0}`
   return request.get(url)
+}
+// 获取访问量前五的文章
+export const getArticleTopFive = () => {
+  return request.get('/article/top5')
 }
 // 获取某篇文章
 export const getArticleById = (id: number) => {

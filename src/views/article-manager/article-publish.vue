@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
-import type { UploadFile } from 'element-plus'
+import type { UploadFile, UploadProps } from 'element-plus'
 import {
   ARTICLE_TYPE,
   type Article,
@@ -31,12 +31,10 @@ const navTagStore = useNavTags()
 const uploadUrl = ref<string>(import.meta.env.VITE_UPLOAD_URL)
 const uploadToken = ref<string>(import.meta.env.VITE_UPLOAD_TOKEN)
 const imgBaseUrl = import.meta.env.VITE_IMG_BASE_URL
+const imageUrl = ref<string>('')
 const tags = ref<ArticleTag[]>([])
 const categories = ref<ArticleCategory[]>([])
 const articleDialogVisible = ref<boolean>(false)
-const previewImageUrl = ref<string>('')
-const imgPreviewDialogVisible = ref<boolean>(false)
-const fileList = ref<UploadFile[]>([])
 const formInitial = () => ({
   author_id: 1,
   title: '',
@@ -63,12 +61,8 @@ watch(
     if (newVal) {
       const article = articleStore.getArticle(newVal as string)
       Object.assign(articleForm, article)
-      if (article.cover_url) {
-        fileList.value = [{ url: article.cover_url } as any]
-      }
     } else {
       Object.assign(articleForm, formInitial())
-      fileList.value = []
     }
   },
   { immediate: true }
@@ -112,7 +106,10 @@ const clearRoute = () => {
   }
 }
 // 图片上传成功，获取图片 url
-const handleCoverSuccess = async (response: any) => {
+const handleCoverSuccess: UploadProps['onSuccess'] = async (
+  response: any,
+  uploadFile: UploadFile
+) => {
   articleForm.cover_url = imgBaseUrl + response.hash
   if (!articleForm.cover_url) {
     return Message({
@@ -120,6 +117,7 @@ const handleCoverSuccess = async (response: any) => {
       message: '封面上传错误，请重新上传'
     })
   }
+  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
 }
 // 提交文章
 const handleSubmitArticle = async () => {
@@ -145,6 +143,12 @@ const handleSubmitArticle = async () => {
     return Message({
       type: 'error',
       message: '文章摘要不满足要求！'
+    })
+  }
+  if (!articleForm.cover_url) {
+    return Message({
+      type: 'error',
+      message: '请上传文章封面！'
     })
   }
   articleForm.status = true
@@ -188,16 +192,6 @@ const handleSaveOrUpdateAsDraft = async () => {
 // 重置表单
 const handleResetForm = () => {
   Object.assign(articleForm, formInitial())
-}
-// 图片预览
-const handlePictureCardPreview = (file: UploadFile) => {
-  previewImageUrl.value = file.url!
-  imgPreviewDialogVisible.value = true
-}
-// 删除文件
-const handleRemoveFile = () => {
-  articleForm.cover_url = ''
-  fileList.value = []
 }
 </script>
 
@@ -290,41 +284,25 @@ const handleRemoveFile = () => {
         </el-form-item>
         <el-form-item label="文章封面">
           <el-upload
-            list-type="picture-card"
-            v-model:file-list="fileList"
+            class="avatar-uploader"
             :action="uploadUrl"
             :data="{ token: uploadToken }"
-            :limit="1"
+            :show-file-list="false"
             :on-success="handleCoverSuccess"
           >
-            <h-icon icon="plus" />
-            <template #file="{ file }">
-              <div>
-                <img
-                  class="el-upload-list__item-thumbnail"
-                  :src="file.url"
-                  alt=""
-                />
-                <span class="el-upload-list__item-actions">
-                  <span
-                    class="el-upload-list__item-preview"
-                    @click="handlePictureCardPreview(file)"
-                  >
-                    <h-icon icon="zoom-in" />
-                  </span>
-                  <span
-                    class="el-upload-list__item-delete"
-                    @click="handleRemoveFile"
-                  >
-                    <h-icon icon="delete" />
-                  </span>
-                </span>
-              </div>
-            </template>
+            <el-image
+              v-if="imageUrl"
+              style="width: 160px; height: 160px"
+              :src="imageUrl"
+              fit="cover"
+            />
+            <h-icon
+              v-else
+              class="justify-center items-center w-[160px] h-[160px]"
+              icon="plus"
+              size="28px"
+            />
           </el-upload>
-          <el-dialog v-model="imgPreviewDialogVisible">
-            <img w-full :src="previewImageUrl" alt="Preview Image" />
-          </el-dialog>
         </el-form-item>
         <el-form-item label="置顶">
           <el-switch
@@ -361,3 +339,22 @@ const handleRemoveFile = () => {
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+:deep(.avatar-uploader .el-upload) {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+:deep(.avatar-uploader .el-upload:hover) {
+  border-color: var(--el-color-primary);
+}
+
+:deep(.i-icon-plus) {
+  display: flex !important;
+}
+</style>

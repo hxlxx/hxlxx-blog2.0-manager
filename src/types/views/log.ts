@@ -8,4 +8,5 @@ export type OperationLog = {
   address: string
   updated_at: Date
   parameter: object
+  response: object
 }
