@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeMount, ref, computed } from 'vue'
 import {
   createTag,
   getTagById,
@@ -10,13 +11,12 @@ import {
 import type { ArticleTag } from '@/types'
 import { Confirm, Message } from '@/utils'
 import type { Action } from 'element-plus'
-import { onBeforeMount, ref } from 'vue'
 
 const tagList = ref<ArticleTag[]>([])
 const dialogVisible = ref<boolean>(false)
 const tag = ref<ArticleTag>({ id: 0, tag_name: '' })
 const memo = ref<string>('')
-const isChanged = ref<boolean>(false)
+const isChanged = computed(() => memo.value !== tag.value.tag_name)
 const tagName = ref<string>('')
 const selectedItems = ref<ArticleTag[]>([])
 const loading = ref<boolean>(false)
@@ -53,10 +53,6 @@ const handleOpenDialog = async (id: number) => {
   const { data } = await getTagById(id)
   tag.value = data
   memo.value = tag.value.tag_name
-}
-// 判断输入框内容是否变化
-const handleInput = () => {
-  isChanged.value = memo.value !== tag.value.tag_name
 }
 // 提交修改
 const handleSubmitTag = async () => {
@@ -192,7 +188,7 @@ const handleRemoveAllSelected = () => {
     >
       <el-form label-width="80px">
         <el-form-item label="文章标签">
-          <el-input v-model="tag.tag_name" @input="handleInput" />
+          <el-input v-model="tag.tag_name" />
         </el-form-item>
       </el-form>
       <template #footer>

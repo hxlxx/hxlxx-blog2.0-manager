@@ -20,7 +20,7 @@
       rgba(129, 140, 248, 0.7)
     );
     border-radius: 5px;
-    box-shadow: 3px 3px 10px 1px rgba(51, 51, 51, 0.5);
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
   }
 }
 

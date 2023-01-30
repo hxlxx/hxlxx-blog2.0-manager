@@ -6,7 +6,7 @@ import AppMain from './components/app-main/index.vue'
 
 <template>
   <el-container class="h-full" direction="vertical">
-    <el-container direction="horizontal">
+    <el-container class="bg-gray-100 dark:bg-[#121212]" direction="horizontal">
       <el-aside
         width="auto"
         class="shadow-md"

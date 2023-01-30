@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
-import type { FormRules } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { login } from '@/api'
 import { Loading } from '@/utils'
 import { Message } from '@/utils'
@@ -13,6 +13,7 @@ const router = useRouter()
 const userStore = useUser()
 const menuStore = useMenu()
 
+const loginRuleFormRef = ref<FormInstance>()
 const loginRuleForm = reactive<LoginInfo>({
   username: '',
   password: '',
@@ -36,7 +37,7 @@ onBeforeUnmount(() => {
 })
 
 // 点击登录
-const handleLogin = async () => {
+const handleLogin = () => {
   if (!loginRuleForm.username || !loginRuleForm.password) {
     return Message({
       type: 'warning',
@@ -53,18 +54,29 @@ const handleLogin = async () => {
     fullscreen: true,
     body: true
   })
-  const { data, code } = (await login({ data: loginRuleForm })) || {}
-  if (code === 200) {
-    userStore.setUser(data.user)
-    userStore.setToken(data.token)
-    await menuStore.getMenuList()
-    router.push({ path: '/' })
-    Message({
-      type: 'success',
-      message: '登录成功！'
-    })
-  }
-  loading.close()
+  if (!loginRuleFormRef.value) return
+  loginRuleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      const { data, code } = (await login({ data: loginRuleForm })) || {}
+      if (code === 200) {
+        userStore.setUser(data.user)
+        userStore.setToken(data.token)
+        await menuStore.getMenuList()
+        router.push({ path: '/' })
+        Message({
+          type: 'success',
+          message: '登录成功！'
+        })
+      }
+      loading.close()
+    } else {
+      Message({
+        type: 'error',
+        message: '登录失败，请重新登陆！'
+      })
+      return false
+    }
+  })
 }
 // 切换验证码
 const handleChangeCaptcha = () => {
@@ -121,7 +133,7 @@ const handleChangeCaptcha = () => {
             />
           </div>
         </el-form-item>
-        <el-button type="primary" class="w-[100%]" @click="handleLogin">
+        <el-button type="primary" class="w-[100%]" @click="handleLogin()">
           登录
         </el-button>
       </el-form>

@@ -16,6 +16,7 @@ const route = useRoute()
     <router-view v-slot="{ Component }">
       <transition
         appear
+        mode="out-in"
         enter-active-class="relative transition-all duration-500 cus-in-out"
         enter-from-class="opacity-0 -left-[50px]"
         enter-to-class="opacity-100 left-0"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onBeforeMount, ref, computed } from 'vue'
 import {
   createCategory,
   getCategoryById,
@@ -10,13 +11,12 @@ import {
 import type { ArticleCategory } from '@/types'
 import { Confirm, Message } from '@/utils'
 import type { Action } from 'element-plus'
-import { onBeforeMount, ref } from 'vue'
 
 const categoryList = ref<ArticleCategory[]>([])
 const dialogVisible = ref<boolean>(false)
 const category = ref<ArticleCategory>({ id: 0, category_name: '' })
 const memo = ref<string>('')
-const isChanged = ref<boolean>(false)
+const isChanged = computed(() => memo.value !== category.value.category_name)
 const categoryName = ref<string>('')
 const selectedItems = ref<ArticleCategory[]>([])
 const loading = ref<boolean>(false)
@@ -53,10 +53,6 @@ const handleOpenDialog = async (id: number) => {
   const { data } = await getCategoryById(id)
   category.value = data
   memo.value = category.value.category_name
-}
-// 判断输入框内容是否变化
-const handleInput = () => {
-  isChanged.value = memo.value !== category.value.category_name
 }
 // 提交修改
 const handleSubmitCategory = async () => {
@@ -190,7 +186,7 @@ const handleRemoveAllSelected = () => {
     >
       <el-form label-width="80px">
         <el-form-item label="文章分类">
-          <el-input v-model="category.category_name" @input="handleInput" />
+          <el-input v-model="category.category_name" />
         </el-form-item>
       </el-form>
       <template #footer>

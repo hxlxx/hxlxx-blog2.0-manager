@@ -14,7 +14,9 @@ import {
   type DatasetComponentOption,
   TransformComponent,
   LegendComponent,
-  type LegendComponentOption
+  type LegendComponentOption,
+  GridComponent,
+  type GridComponentOption
 } from 'echarts/components'
 import { LabelLayout, UniversalTransition } from 'echarts/features'
 import { SVGRenderer } from 'echarts/renderers'
@@ -26,6 +28,7 @@ export type ECOption = echarts.ComposeOption<
   | DatasetComponentOption
   | LegendComponentOption
   | BarSeriesOption
+  | GridComponentOption
 >
 
 // 注册必须的组件
@@ -35,6 +38,7 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   LegendComponent,
+  GridComponent,
   LabelLayout,
   UniversalTransition,
   SVGRenderer,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
-import type { UploadFile, UploadProps } from 'element-plus'
+import type { UploadProps, UploadRawFile } from 'element-plus'
 import {
   ARTICLE_TYPE,
   type Article,
@@ -31,7 +31,6 @@ const navTagStore = useNavTags()
 const uploadUrl = ref<string>(import.meta.env.VITE_UPLOAD_URL)
 const uploadToken = ref<string>(import.meta.env.VITE_UPLOAD_TOKEN)
 const imgBaseUrl = import.meta.env.VITE_IMG_BASE_URL
-const imageUrl = ref<string>('')
 const tags = ref<ArticleTag[]>([])
 const categories = ref<ArticleCategory[]>([])
 const articleDialogVisible = ref<boolean>(false)
@@ -105,11 +104,21 @@ const clearRoute = () => {
     router.push({ path: '/article/list' })
   }
 }
-// 图片上传成功，获取图片 url
-const handleCoverSuccess: UploadProps['onSuccess'] = async (
-  response: any,
-  uploadFile: UploadFile
+// 上传图片校验
+const handleBeforeUpload: UploadProps['beforeUpload'] = (
+  rawFile: UploadRawFile
 ) => {
+  if (rawFile.size / 1024 / 1024 > 2) {
+    Message({
+      type: 'error',
+      message: '图片大小不能超过2M！'
+    })
+    return false
+  }
+  return true
+}
+// 图片上传成功，获取图片 url
+const handleCoverSuccess: UploadProps['onSuccess'] = (response: any) => {
   articleForm.cover_url = imgBaseUrl + response.hash
   if (!articleForm.cover_url) {
     return Message({
@@ -117,7 +126,6 @@ const handleCoverSuccess: UploadProps['onSuccess'] = async (
       message: '封面上传错误，请重新上传'
     })
   }
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
 }
 // 提交文章
 const handleSubmitArticle = async () => {
@@ -288,12 +296,13 @@ const handleResetForm = () => {
             :action="uploadUrl"
             :data="{ token: uploadToken }"
             :show-file-list="false"
+            :before-upload="handleBeforeUpload"
             :on-success="handleCoverSuccess"
           >
             <el-image
-              v-if="imageUrl"
+              v-if="articleForm.cover_url"
               style="width: 160px; height: 160px"
-              :src="imageUrl"
+              :src="articleForm.cover_url"
               fit="cover"
             />
             <h-icon
@@ -331,9 +340,9 @@ const handleResetForm = () => {
             关闭
           </el-button>
           <el-button type="info" @click="handleResetForm">重置</el-button>
-          <el-button type="primary" @click="handleSubmitArticle"
-            >提交</el-button
-          >
+          <el-button type="primary" @click="handleSubmitArticle">
+            提交
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -341,19 +350,6 @@ const handleResetForm = () => {
 </template>
 
 <style scoped>
-:deep(.avatar-uploader .el-upload) {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
-}
-
-:deep(.avatar-uploader .el-upload:hover) {
-  border-color: var(--el-color-primary);
-}
-
 :deep(.i-icon-plus) {
   display: flex !important;
 }

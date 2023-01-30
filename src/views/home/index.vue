@@ -6,27 +6,30 @@ import { echarts } from '@/utils'
 import type { EchartsData } from '@/types'
 
 const containerRef = ref<HTMLElement>()
-const echartRef = ref<HTMLElement>()
+const categoryChartRef = ref<HTMLElement>()
+const topFiveChartRef = ref<HTMLElement>()
 const viewTimes = ref<number>(0)
 const userCount = ref<number>(0)
 const articleCount = ref<number>(0)
-const articleCategoryCount = ref<any[]>([])
+let articleCategoryCount: any[] = []
+let topFive: any[] = []
 const getPieOption = (data: EchartsData[]) => ({
-  title: {
-    text: '文章分类统计',
-    left: 'center'
-  },
   tooltip: {
     trigger: 'item',
     formatter: '{a} <br/>{b} : {c} ({d}%)'
   },
   legend: {
     left: 'center',
-    top: 'bottom'
+    top: 'bottom',
+    textStyle: {
+      textBorderType: 'solid',
+      textBorderWidth: 1,
+      textBorderColor: '#fff'
+    }
   },
   series: [
     {
-      name: '文章分类',
+      name: '文章分类统计',
       type: 'pie',
       radius: [20, 100],
       center: ['50%', '50%'],
@@ -39,16 +42,32 @@ const getPieOption = (data: EchartsData[]) => ({
   ]
 })
 const getBarOption = (xData: string[], seriesData: number[]) => ({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  grid: {
+    left: '4%',
+    right: '4%',
+    containLabel: true
+  },
   xAxis: {
     type: 'category',
-    data: xData
+    data: xData,
+    axisTick: {
+      alignWithLabel: true
+    }
   },
   yAxis: {
     type: 'value'
   },
   series: [
     {
+      name: '浏览量排行',
       type: 'bar',
+      barWidth: '40%',
       data: seriesData
     }
   ]
@@ -72,13 +91,13 @@ const initSiteInfo = async () => {
   viewTimes.value = siteInfo.viewTimes
   userCount.value = siteInfo.userCount
   articleCount.value = siteInfo.articleCount
-  articleCategoryCount.value = siteInfo.articleCategoryCount
-  initChart()
+  articleCategoryCount = siteInfo.articleCategoryCount
+  initCategoryChart()
 }
-// 初始化饼图
-const initChart = () => {
-  const categoryChart = echarts.init(echartRef.value!)
-  const data = articleCategoryCount.value.map((item) => ({
+// 初始化分类图表
+const initCategoryChart = () => {
+  const categoryChart = echarts.init(categoryChartRef.value!)
+  const data = articleCategoryCount.map((item) => ({
     value: item.article_count,
     name: item.category_name
   })) as EchartsData[]
@@ -87,7 +106,17 @@ const initChart = () => {
 // 初始化访问量前五的文章
 const initArticleTopFive = async () => {
   const { data } = (await getArticleTopFive()) || {}
-  console.log(data)
+  topFive = data
+  initTopFiveChart()
+}
+// 初始化top5图表
+const initTopFiveChart = () => {
+  const topFiveChart = echarts.init(topFiveChartRef.value!)
+  const xData = topFive.map((item) => {
+    return item.title.length >= 10 ? item.title.slice(0, 9) + '...' : item.title
+  })
+  const seriesData = topFive.map((item) => item.view_times)
+  topFiveChart.setOption(getBarOption(xData, seriesData))
 }
 </script>
 
@@ -123,11 +152,24 @@ const initArticleTopFive = async () => {
         </div>
       </div>
     </div>
-    <div class="flex justify-around text-center">
-      <div ref="echartRef" class="w-[400px] h-[300px]"></div>
-      <div>
+    <div
+      class="mb-[20px] pt-[15px] text-center rounded-[10px] shadow-round-lg dark:shadow-round-lg-dark"
+    >
+      <span class="text-lg font-bold">文章访问量排行</span>
+      <div ref="topFiveChartRef" class="w-full h-[600px]"></div>
+    </div>
+    <div class="flex justify-between text-center">
+      <div
+        class="w-[49%] h-[328px] py-[15px] rounded-[10px] shadow-round-lg dark:shadow-round-lg-dark box-content"
+      >
+        <span class="text-lg font-bold">文章分类统计</span>
+        <div ref="categoryChartRef" class="w-full h-[300px]"></div>
+      </div>
+      <div
+        class="w-[49%] py-[15px] rounded-[10px] shadow-round-lg dark:shadow-round-lg-dark"
+      >
         <span class="text-lg font-bold">文章标签</span>
-        <div ref="containerRef"></div>
+        <div ref="containerRef" class="flex justify-center items-center"></div>
       </div>
     </div>
   </div>
