@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Menu } from '@/types'
-import { ref, onBeforeMount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getVisibleMenu } from '@/utils'
 import { useMenu, useUser } from '@/stores'

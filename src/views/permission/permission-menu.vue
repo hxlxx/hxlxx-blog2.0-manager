@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw, onBeforeMount } from 'vue'
 import type { Menu } from '@/types'
 import {
   createMenu,

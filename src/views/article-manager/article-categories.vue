@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, computed } from 'vue'
 import {
   createCategory,
   getCategoryById,

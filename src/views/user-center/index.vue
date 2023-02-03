@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive, onBeforeMount, computed } from 'vue'
 import type {
   FormInstance,
   FormRules,
@@ -25,6 +24,12 @@ const pwdForm = reactive<any>({
   oldPwd: '',
   newPwd: ''
 })
+
+onBeforeMount(() => {
+  Object.assign(user, userStore.getUser())
+  username_memo.value = user.username
+})
+
 const checkNewPwd = (rule: any, value: any, callback: any) => {
   if (value === '') {
     callback(new Error('请输入新密码'))
@@ -40,11 +45,6 @@ const pwdFormRules = reactive<FormRules>({
     { min: 6, max: 20, message: '密码长度在6 - 20位', trigger: 'blur' }
   ],
   newPwd: [{ required: true, validator: checkNewPwd, trigger: 'blur' }]
-})
-
-onBeforeMount(() => {
-  Object.assign(user, userStore.getUser())
-  username_memo.value = user.username
 })
 
 // 上传图片校验

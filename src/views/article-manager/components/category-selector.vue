@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ArticleCategory } from '@/types'
-import { ref, onBeforeMount } from 'vue'
 
 type Props = {
   categories: ArticleCategory[]

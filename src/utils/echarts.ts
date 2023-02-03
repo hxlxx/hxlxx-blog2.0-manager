@@ -3,7 +3,9 @@ import {
   PieChart,
   type PieSeriesOption,
   BarChart,
-  type BarSeriesOption
+  type BarSeriesOption,
+  LineChart,
+  type LinesSeriesOption
 } from 'echarts/charts'
 import {
   TitleComponent,
@@ -29,6 +31,7 @@ export type ECOption = echarts.ComposeOption<
   | LegendComponentOption
   | BarSeriesOption
   | GridComponentOption
+  | LinesSeriesOption
 >
 
 // 注册必须的组件
@@ -43,7 +46,8 @@ echarts.use([
   UniversalTransition,
   SVGRenderer,
   PieChart,
-  BarChart
+  BarChart,
+  LineChart
 ])
 
 export default echarts

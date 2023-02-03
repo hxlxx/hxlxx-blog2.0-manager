@@ -57,20 +57,27 @@ export const mergeAsyncRoutes = (
   role: Role
 ) => {
   if (role.role_name === 'admin') {
+    // admin 角色直接渲染所有动态路由
     asyncRoutes.push({
       path: '/:pathMatch(.*)*',
       redirect: '/404'
     })
     return asyncRoutes
   } else {
+    // 非 admin 角色需要根据菜单动态渲染路由
     const parent = menus.filter((menu) => !menu.pid && menu.visible)
     const children = menus.filter((menu) => menu.pid && menu.visible)
+    // 过滤所有可见的路由
     const visibleParentRoute = asyncRoutes.filter((route) =>
       parent.some((menu) => menu.path === route.path)
     )
+    // 过滤所有可见的子路由
     visibleParentRoute.forEach((pRoute) => {
       if (pRoute.children) {
         pRoute.children = pRoute.children.filter((cRoute) => {
+          // 判断子路由路径和父路由路径相同的情况（/user-center）
+          if (cRoute.path === '') return true
+          // 判断当前子路由是否和子菜单相匹配
           const fullPath = pRoute.path + '/' + cRoute.path
           return children.some((menu) => menu.path === fullPath)
         })

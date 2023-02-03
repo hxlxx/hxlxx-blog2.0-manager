@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onBeforeMount } from 'vue'
 import { useArticle, useMenu, useNavTags, useUser } from '@/stores'
-import { useRouter, useRoute, type RouteRecord } from 'vue-router'
+import type { RouteRecord } from 'vue-router'
 import type { NavTag, User } from '@/types'
 import { logout } from '@/utils'
-import ToggleDark from '@/components/toggle-theme/index.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -100,7 +98,7 @@ const handleLogout = () => {
         </el-breadcrumb>
         <div class="ml-[auto] mr-3 flex gap-4 items-center">
           <span>{{ user.username }}</span>
-          <toggle-dark />
+          <toggle-theme />
           <full-screen />
           <el-dropdown>
             <el-avatar

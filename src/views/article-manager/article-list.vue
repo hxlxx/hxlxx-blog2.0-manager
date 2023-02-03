@@ -9,8 +9,6 @@ import {
 import { useArticle } from '@/stores'
 import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
 import { Message } from '@/utils'
-import { onBeforeMount, ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const articleStore = useArticle()

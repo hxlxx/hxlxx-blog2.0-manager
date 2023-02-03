@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import lottie from 'lottie-web'
 import animationData from '@/assets/lotties/404.json'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const lottieRef = ref<HTMLElement>()

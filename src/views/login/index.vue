@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import { login } from '@/api'
 import { Loading } from '@/utils'
@@ -7,7 +6,6 @@ import { Message } from '@/utils'
 import type { LoginInfo } from '@/types'
 import { useUser, useMenu } from '@/stores'
 import { loginRules } from './rules'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const userStore = useUser()

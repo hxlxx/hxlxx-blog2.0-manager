@@ -16,14 +16,19 @@ export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      imports: ['vue'],
+      imports: ['vue', 'vue-router', 'pinia'],
       resolvers: [
         ElementPlusResolver(),
         IconsResolver({
           prefix: 'Icon'
         })
       ],
-      dts: path.resolve(pathSrc, 'auto-imports.d.ts')
+      dts: path.resolve(pathSrc, 'auto-imports.d.ts'),
+      eslintrc: {
+        enabled: false,
+        filepath: './.eslintrc-auto-import.json',
+        globalsPropValue: true
+      }
     }),
     Components({
       resolvers: [

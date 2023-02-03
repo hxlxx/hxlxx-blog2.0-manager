@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, reactive, toRaw, watch } from 'vue'
 import MdEditor from 'md-editor-v3'
 import type { UploadProps, UploadRawFile } from 'element-plus'
 import {
@@ -17,7 +16,6 @@ import {
   createDraft,
   updateDraft
 } from '@/api'
-import { useRoute, useRouter } from 'vue-router'
 import { useArticle, useNavTags } from '@/stores'
 import { articleTypes } from './constants'
 import CategorySelector from './components/category-selector.vue'

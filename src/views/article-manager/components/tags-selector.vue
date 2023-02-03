@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ArticleTag } from '@/types'
-import { ref, onBeforeMount } from 'vue'
 
 type Props = {
   tags: ArticleTag[]
