@@ -55,6 +55,11 @@ export default defineConfig({
         target: 'http://localhost:3000',
         rewrite: (path) => path.replace(/\/api/, ''),
         changeOrigin: true
+      },
+      '/qiniu': {
+        target: 'https://upload-z2.qiniup.com',
+        rewrite: (path) => path.replace(/\/qiniu/, ''),
+        changeOrigin: true
       }
     }
   }

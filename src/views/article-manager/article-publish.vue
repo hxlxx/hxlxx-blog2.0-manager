@@ -20,6 +20,7 @@ import { useArticle, useNavTags } from '@/stores'
 import { articleTypes } from './constants'
 import CategorySelector from './components/category-selector.vue'
 import TagsSelector from './components/tags-selector.vue'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -71,6 +72,34 @@ const initArticleOptions = async () => {
   const { data: categoryList } = await getCategoryList()
   tags.value = tagList.res
   categories.value = categoryList.res
+}
+// 输入内容时更新摘要
+const handleContentChange = (value: string) => {
+  articleForm.description = value.replace(/\s/g, '').slice(0, 100)
+}
+// 文章中的图片上传
+const handleUploadImg = async (
+  files: File[],
+  callback: (urls: string[]) => void
+) => {
+  const res = await Promise.all(
+    files.map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData()
+        form.append('file', file)
+        form.append('token', uploadToken.value)
+        axios
+          .post('/qiniu/', form, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          .then((res) => rev(res))
+          .catch((error) => rej(error))
+      })
+    })
+  )
+  callback(res.map((item: any) => imgBaseUrl + item.data.hash))
 }
 // 发布文章
 const handlePublishArticle = () => {
@@ -225,6 +254,8 @@ const handleResetForm = () => {
         :style="{
           height: 'calc(100% - 100px)'
         }"
+        @onChange="handleContentChange"
+        @onUploadImg="handleUploadImg"
       />
     </div>
     <el-dialog
