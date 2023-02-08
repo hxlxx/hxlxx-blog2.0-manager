@@ -100,5 +100,17 @@ export const asyncRoutes: RouteRecordRaw[] = [
         meta: { title: '操作日志', activePath: '/log/operation' }
       }
     ]
+  },
+  {
+    path: '/site-config',
+    component: Layout,
+    meta: { title: '网站配置' },
+    children: [
+      {
+        path: '',
+        name: 'site-config',
+        component: () => import('@/views/site-config/index.vue')
+      }
+    ]
   }
 ]

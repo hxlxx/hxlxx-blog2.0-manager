@@ -178,6 +178,7 @@ const handleConfirm = async (id: number) => {
           <h-icon :icon="row.icon" size="20px" />
         </template>
       </el-table-column>
+      <el-table-column label="id" prop="id" width="100px" />
       <el-table-column label="图标名称">
         <template #default="{ row }">
           <el-tag type="success" effect="plain">{{ row.icon }}</el-tag>
