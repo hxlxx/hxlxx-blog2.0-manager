@@ -21,7 +21,6 @@ export type ArticleCategory = {
 
 export type Article = {
   id?: number
-  author_id: number
   title: string
   content: string
   description: string

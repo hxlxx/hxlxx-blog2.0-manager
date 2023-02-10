@@ -73,7 +73,7 @@ const handleShowDraftArticle = () => {
 // 编辑
 const handleEditArticle = async (id: number) => {
   const { data } = (await getArticleById(id)) || {}
-  articleStore.setArticle(id + '', data?.res)
+  articleStore.setArticle(id + '', data)
   router.push({ name: 'edit-article', params: { id } })
 }
 // 删除
