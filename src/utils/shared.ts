@@ -76,7 +76,7 @@ export const mergeAsyncRoutes = (
       if (pRoute.children) {
         pRoute.children = pRoute.children.filter((cRoute) => {
           // 判断子路由路径和父路由路径相同的情况（/user-center）
-          if (cRoute.path === '') return true
+          if (cRoute.path === '' || cRoute.path.indexOf(':') === 0) return true
           // 判断当前子路由是否和子菜单相匹配
           const fullPath = pRoute.path + '/' + cRoute.path
           return children.some((menu) => menu.path === fullPath)

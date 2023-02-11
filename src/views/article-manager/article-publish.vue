@@ -14,7 +14,8 @@ import {
   getTagList,
   getCategoryList,
   createDraft,
-  updateDraft
+  updateDraft,
+  authorization
 } from '@/api'
 import { useArticle, useNavTags } from '@/stores'
 import { articleTypes } from './constants'
@@ -132,17 +133,21 @@ const clearRoute = () => {
   }
 }
 // 上传图片校验
-const handleBeforeUpload: UploadProps['beforeUpload'] = (
+const handleBeforeUpload: UploadProps['beforeUpload'] = async (
   rawFile: UploadRawFile
 ) => {
-  if (rawFile.size / 1024 / 1024 > 2) {
-    Message({
-      type: 'error',
-      message: '图片大小不能超过2M！'
-    })
-    return false
+  const { code } = (await authorization()) || {}
+  if (code === 200) {
+    if (rawFile.size / 1024 / 1024 > 5) {
+      Message({
+        type: 'error',
+        message: '图片大小不能超过5M！'
+      })
+      return false
+    }
+    return true
   }
-  return true
+  return false
 }
 // 图片上传成功，获取图片 url
 const handleCoverSuccess: UploadProps['onSuccess'] = (response: any) => {

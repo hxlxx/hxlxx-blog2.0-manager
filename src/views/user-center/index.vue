@@ -8,7 +8,7 @@ import type {
 import { useUser } from '@/stores'
 import type { User } from '@/types'
 import { Message } from '@/utils'
-import { resetAvatar, resetUsername, resetPassword } from '@/api'
+import { resetAvatar, resetUsername, resetPassword, authorization } from '@/api'
 
 const userStore = useUser()
 
@@ -48,17 +48,21 @@ const pwdFormRules = reactive<FormRules>({
 })
 
 // 上传图片校验
-const handleBeforeUpload: UploadProps['beforeUpload'] = (
+const handleBeforeUpload: UploadProps['beforeUpload'] = async (
   rawFile: UploadRawFile
 ) => {
-  if (rawFile.size / 1024 / 1024 > 2) {
-    Message({
-      type: 'error',
-      message: '图片大小不能超过2M！'
-    })
-    return false
+  const { code } = (await authorization()) || {}
+  if (code === 200) {
+    if (rawFile.size / 1024 / 1024 > 5) {
+      Message({
+        type: 'error',
+        message: '图片大小不能超过5M！'
+      })
+      return false
+    }
+    return true
   }
-  return true
+  return false
 }
 // 图片上传成功，更新用户头像
 const handleCoverSuccess: UploadProps['onSuccess'] = (response: any) => {

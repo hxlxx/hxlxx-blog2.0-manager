@@ -28,3 +28,7 @@ export const resetUsername = (options: AxiosRequestConfig) => {
 export const resetPassword = (options: AxiosRequestConfig) => {
   return request.patch('/user/password', options)
 }
+// 身份认证
+export const authorization = () => {
+  return request.get('/auth')
+}
