@@ -112,5 +112,37 @@ export const asyncRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/site-config/index.vue')
       }
     ]
+  },
+  {
+    path: '/comments',
+    component: Layout,
+    meta: { title: '评论管理' },
+    children: [
+      {
+        path: '',
+        name: 'comments',
+        component: () => import('@/views/comments/index.vue')
+      }
+    ]
+  },
+  {
+    path: '/talks',
+    redirect: '/talks/publish',
+    component: Layout,
+    meta: { title: '说说管理' },
+    children: [
+      {
+        path: 'publish',
+        name: 'talks',
+        component: () => import('@/views/talks/talks-publish.vue'),
+        meta: { title: '发布说说', activePath: '/talks/publish' }
+      },
+      {
+        path: 'list',
+        name: 'talks-list',
+        component: () => import('@/views/talks/talks-publish.vue'),
+        meta: { title: '说说列表', activePath: '/talks/list' }
+      }
+    ]
   }
 ]

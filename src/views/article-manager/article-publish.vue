@@ -83,24 +83,27 @@ const handleUploadImg = async (
   files: File[],
   callback: (urls: string[]) => void
 ) => {
-  const res = await Promise.all(
-    files.map((file) => {
-      return new Promise((rev, rej) => {
-        const form = new FormData()
-        form.append('file', file)
-        form.append('token', uploadToken.value)
-        axios
-          .post('/qiniu/', form, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          .then((res) => rev(res))
-          .catch((error) => rej(error))
+  const { code } = (await authorization()) || {}
+  if (code === 200) {
+    const res = await Promise.all(
+      files.map((file) => {
+        return new Promise((rev, rej) => {
+          const form = new FormData()
+          form.append('file', file)
+          form.append('token', uploadToken.value)
+          axios
+            .post('/qiniu/', form, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            })
+            .then((res) => rev(res))
+            .catch((error) => rej(error))
+        })
       })
-    })
-  )
-  callback(res.map((item: any) => imgBaseUrl + item.data.hash))
+    )
+    callback(res.map((item: any) => imgBaseUrl + item.data.hash))
+  }
 }
 // 发布文章
 const handlePublishArticle = () => {
