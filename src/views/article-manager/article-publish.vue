@@ -28,8 +28,8 @@ const router = useRouter()
 const articleStore = useArticle()
 const navTagStore = useNavTags()
 
-const uploadUrl = ref<string>(import.meta.env.VITE_UPLOAD_URL)
-const uploadToken = ref<string>(import.meta.env.VITE_UPLOAD_TOKEN)
+const uploadUrl = import.meta.env.VITE_UPLOAD_URL
+const uploadToken = import.meta.env.VITE_UPLOAD_TOKEN
 const imgBaseUrl = import.meta.env.VITE_IMG_BASE_URL
 const tags = ref<ArticleTag[]>([])
 const categories = ref<ArticleCategory[]>([])

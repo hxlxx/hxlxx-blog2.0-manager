@@ -28,12 +28,12 @@ const route = useRoute()
   </el-card>
 </template>
 
-<style scoped>
-:deep(.el-card__header) {
+<style>
+.el-card__header {
   position: relative;
   border-bottom: none;
 }
-:deep(.el-card__header::before) {
+.el-card__header::before {
   display: block;
   position: absolute;
   top: 0;

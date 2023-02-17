@@ -3,11 +3,9 @@ import type { ArticleState } from '@/types/store/article'
 import { defineStore } from 'pinia'
 
 export const useArticle = defineStore('article', {
-  state: (): ArticleState => {
-    return {
-      articleMap: {}
-    }
-  },
+  state: (): ArticleState => ({
+    articleMap: {}
+  }),
   actions: {
     setArticle(id: string, article: Article) {
       this.articleMap[id] = article

@@ -1,12 +1,10 @@
 import type { User } from './user'
 
-export type Comment = {
+export type Talk = {
   id: number
   uid: number
-  aid: number
-  pid: number
-  reply_to: string
   content: string
-  created_at: string
+  comment_count: number
+  created_at: Date
   user: User
 }

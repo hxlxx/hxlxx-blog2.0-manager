@@ -140,8 +140,14 @@ export const asyncRoutes: RouteRecordRaw[] = [
       {
         path: 'list',
         name: 'talks-list',
-        component: () => import('@/views/talks/talks-publish.vue'),
+        component: () => import('@/views/talks/talks-list.vue'),
         meta: { title: '说说列表', activePath: '/talks/list' }
+      },
+      {
+        path: ':id(\\d+)',
+        name: 'edit-talk',
+        component: () => import('@/views/talks/talks-publish.vue'),
+        meta: { title: '编辑说说' }
       }
     ]
   }
