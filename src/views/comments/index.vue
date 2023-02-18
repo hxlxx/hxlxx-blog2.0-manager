@@ -122,7 +122,7 @@ const handleRemoveAllSelected = () => {
       </el-table-column>
       <el-table-column label="文章id" width="150px">
         <template #default="{ row }">
-          <span v-if="row.aid">{{ row.aid }}</span>
+          <span v-if="row.topic_id">{{ row.topic_id }}</span>
           <span v-else class="text-gray-300">Null</span>
         </template>
       </el-table-column>

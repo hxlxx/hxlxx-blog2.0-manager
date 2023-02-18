@@ -102,14 +102,28 @@ export const asyncRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/site-config',
+    path: '/config',
+    redirect: '/config/website',
     component: Layout,
-    meta: { title: '网站配置' },
+    meta: { title: '系统设置' },
     children: [
       {
-        path: '',
-        name: 'site-config',
-        component: () => import('@/views/site-config/index.vue')
+        path: 'website',
+        name: 'website',
+        component: () => import('@/views/config/website.vue'),
+        meta: { title: '网站配置', activePath: '/config/website' }
+      },
+      {
+        path: 'about',
+        name: 'about',
+        component: () => import('@/views/config/about.vue'),
+        meta: { title: '关于我', activePath: '/config/about' }
+      },
+      {
+        path: 'links',
+        name: 'links',
+        component: () => import('@/views/config/links.vue'),
+        meta: { title: '友链管理', activePath: '/config/links' }
       }
     ]
   },

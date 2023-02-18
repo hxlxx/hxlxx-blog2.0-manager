@@ -3,7 +3,7 @@ import type { User } from './user'
 export type Comment = {
   id: number
   uid: number
-  aid: number
+  topic_id: number
   pid: number
   reply_to: string
   content: string

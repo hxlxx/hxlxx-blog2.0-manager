@@ -42,7 +42,7 @@ watch(
   { immediate: true }
 )
 
-// 输入内容时更新摘要
+// 输入内容时更新
 const handleContentChange = (value: string) => {
   talk.content = value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
@@ -84,9 +84,10 @@ const clearRoute = () => {
 const handleSubmitTalk = async () => {
   if (!talk.content.trim()) return
   talk.uid = userStore.user.id
-  const { code } = publishOrEdit.value
-    ? await createTalk({ data: talk })
-    : (await updateTalk({ data: talk })) || {}
+  const { code } =
+    (publishOrEdit.value
+      ? await createTalk({ data: talk })
+      : await updateTalk({ data: talk })) || {}
   if (code === 200) {
     Message({
       type: 'success',
