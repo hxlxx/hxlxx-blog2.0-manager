@@ -1,3 +1,4 @@
+import type { QueryInfo } from '@/types'
 import { request } from '@/utils'
 import type { AxiosRequestConfig } from 'axios'
 // 登录
@@ -5,8 +6,8 @@ export const login = (options: AxiosRequestConfig) => {
   return request.post('/login', options)
 }
 // 获取用户列表
-export const getUserList = () => {
-  return request.get('/user')
+export const getUserList = (query: QueryInfo) => {
+  return request.get(`/user?skip=${query.skip || 0}&limit=${query.limit || 0}`)
 }
 // 更新用户角色
 export const updateUserRole = (options: AxiosRequestConfig) => {

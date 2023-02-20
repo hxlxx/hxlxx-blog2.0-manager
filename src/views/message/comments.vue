@@ -18,6 +18,18 @@ onBeforeMount(() => {
   initCommentList(query)
 })
 
+const comment_type = (type: number) => {
+  switch (type) {
+    case 1:
+      return { type: 'success', content: '留言' }
+    case 2:
+      return { type: '', content: '文章' }
+    case 3:
+      return { type: 'warning', content: '说说' }
+    default:
+      break
+  }
+}
 const initCommentList = async (query: QueryInfo) => {
   loading.value = true
   const { data } =
@@ -120,9 +132,9 @@ const handleRemoveAllSelected = () => {
           <span v-else class="text-gray-300">Null</span>
         </template>
       </el-table-column>
-      <el-table-column label="文章id" width="150px">
+      <el-table-column label="文章标题" width="150px">
         <template #default="{ row }">
-          <span v-if="row.topic_id">{{ row.topic_id }}</span>
+          <span v-if="row.type === 2">{{ row.article_title }}</span>
           <span v-else class="text-gray-300">Null</span>
         </template>
       </el-table-column>
@@ -131,6 +143,13 @@ const handleRemoveAllSelected = () => {
         <template #default="{ row }">
           <h-icon icon="time" />
           {{ dateFormat(row.created_at).format('YYYY-MM-DD') }}
+        </template>
+      </el-table-column>
+      <el-table-column label="评论来源" width="160px">
+        <template #default="{ row }">
+          <el-tag plain :type="comment_type(row.type)?.type">
+            {{ comment_type(row.type)?.content }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200px">

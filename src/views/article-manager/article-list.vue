@@ -4,7 +4,8 @@ import {
   getArticleById,
   updateArticleTop,
   updateArticleRecommend,
-  searchArticle
+  searchArticle,
+  removeArticleById
 } from '@/api'
 import { useArticle } from '@/stores'
 import { ARTICLE_STATUS, type Article, type QueryInfo } from '@/types'
@@ -77,8 +78,16 @@ const handleEditArticle = async (id: number) => {
   router.push({ name: 'edit-article', params: { id } })
 }
 // 删除
-const handleRemoveArticle = (id: number) => {
-  console.log(id)
+const handleConfirm = async (id: number) => {
+  const { code } = (await removeArticleById(id)) || {}
+  if (code === 200) {
+    Message({
+      type: 'success',
+      message: '删除文章成功！'
+    })
+    query.page = 1
+    initArticleList()
+  }
 }
 // 修改置顶状态
 const handleChangeTop = async (top: boolean, id: number) => {
@@ -182,7 +191,7 @@ const handleSearchArticle = async () => {
       </el-table-column>
       <el-table-column label="文章标签">
         <template #default="{ row }">
-          <template v-if="row.tags.length">
+          <template v-if="row?.tags?.length">
             <el-tag
               class="mr-3"
               type="success"
@@ -192,6 +201,7 @@ const handleSearchArticle = async () => {
               {{ tag.tag_name }}
             </el-tag>
           </template>
+          <span v-else class="text-gray-300">Null</span>
         </template>
       </el-table-column>
       <el-table-column label="发布时间" width="160px">
@@ -227,15 +237,22 @@ const handleSearchArticle = async () => {
             <h-icon class="mr-1" icon="edit" size="14px" />
             <span>编辑</span>
           </el-button>
-          <el-button
-            plain
-            type="danger"
-            size="small"
-            @click="handleRemoveArticle(row.id)"
+          <el-popconfirm
+            title="是否确认删除？"
+            confirm-button-text="确认"
+            cancel-button-text="取消"
+            confirm-button-type="danger"
+            cancel-button-type="info"
+            @confirm="handleConfirm(row.id)"
+            @cancel="Message({ type: 'info', message: '取消删除' })"
           >
-            <h-icon class="mr-1" icon="delete" size="14px" />
-            <span>删除</span>
-          </el-button>
+            <template #reference>
+              <el-button plain type="danger" size="small">
+                <h-icon class="mr-1" icon="delete" size="14px" />
+                <span>删除</span>
+              </el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>

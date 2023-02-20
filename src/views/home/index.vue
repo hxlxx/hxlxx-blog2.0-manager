@@ -11,6 +11,7 @@ const topFiveChartRef = ref<HTMLElement>()
 const viewTimes = ref<number>(0)
 const userCount = ref<number>(0)
 const articleCount = ref<number>(0)
+const commentCount = ref<number>(0)
 const getPieOption = (data: EchartsData[]) => ({
   tooltip: {
     trigger: 'item',
@@ -125,6 +126,7 @@ const initSiteInfo = async () => {
   viewTimes.value = data.viewTimes
   userCount.value = data.userCount
   articleCount.value = data.articleCount
+  commentCount.value = data.commentCount
   initWeeklyViewChart(data.weeklyViewTimes)
   initCategoryChart(data.articleCategoryCount)
 }
@@ -203,7 +205,7 @@ const initTopFiveChart = (topFive: any[]) => {
         <h-icon icon="comments" size="60px" />
         <div>
           <span class="text-xl">评论数量</span>
-          <div class="text-lg">9999</div>
+          <div class="text-lg">{{ commentCount }}</div>
         </div>
       </div>
     </div>

@@ -13,6 +13,7 @@ export * from './views/home'
 export * from './views/site-config'
 export * from './views/comment'
 export * from './views/talks'
+export * from './views/links'
 
 export type ResponseData = {
   code: number

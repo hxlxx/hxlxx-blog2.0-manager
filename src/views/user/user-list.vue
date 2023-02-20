@@ -5,7 +5,7 @@ import {
   updateUserRole,
   updateUserStatus
 } from '@/api'
-import type { Role, User, UserForm } from '@/types'
+import type { QueryInfo, Role, User, UserForm } from '@/types'
 import { Message } from '@/utils'
 
 const userList = ref<User[]>([])
@@ -18,6 +18,12 @@ const userForm = reactive<UserForm>({
   role_id: 0,
   status: true
 })
+const query = reactive<QueryInfo>({
+  skip: 0,
+  limit: 5,
+  page: 1,
+  total: 0
+})
 
 onBeforeMount(() => {
   initUserList()
@@ -26,8 +32,13 @@ onBeforeMount(() => {
 
 const initUserList = async () => {
   loading.value = true
-  const { data } = (await getUserList()) || {}
-  userList.value = data?.res
+  const { data } =
+    (await getUserList({
+      skip: (query.page! - 1) * query.limit!,
+      limit: query.limit
+    })) || {}
+  userList.value = data.res
+  query.total = data.count
   loading.value = false
 }
 
@@ -67,6 +78,10 @@ const handleChangeUserStatus = async (status: boolean, id: number) => {
     })
     initUserList()
   }
+}
+// 切换分页
+const handleChangePage = () => {
+  initUserList()
 }
 </script>
 
@@ -148,5 +163,16 @@ const handleChangeUserStatus = async (status: boolean, id: number) => {
         </span>
       </template>
     </el-dialog>
+    <div class="w-full flex justify-center mt-3">
+      <el-pagination
+        v-model:current-page="query.page"
+        background
+        layout="prev, pager, next, total"
+        :pager-count="5"
+        :page-size="query.limit"
+        :total="query.total"
+        @current-change="handleChangePage"
+      />
+    </div>
   </div>
 </template>

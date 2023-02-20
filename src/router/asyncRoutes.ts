@@ -128,14 +128,15 @@ export const asyncRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/comments',
+    path: '/message',
     component: Layout,
-    meta: { title: '评论管理' },
+    meta: { title: '消息管理' },
     children: [
       {
-        path: '',
+        path: 'comments',
         name: 'comments',
-        component: () => import('@/views/comments/index.vue')
+        component: () => import('@/views/message/comments.vue'),
+        meta: { title: '评论管理', activePath: '/message/comments' }
       }
     ]
   },
