@@ -17,7 +17,7 @@ import {
   updateDraft,
   authorization
 } from '@/api'
-import { useArticle, useNavTags } from '@/stores'
+import { useArticle, useNavTags, useUser } from '@/stores'
 import { articleTypes } from './constants'
 import CategorySelector from './components/category-selector.vue'
 import TagsSelector from './components/tags-selector.vue'
@@ -27,6 +27,7 @@ const route = useRoute()
 const router = useRouter()
 const articleStore = useArticle()
 const navTagStore = useNavTags()
+const userStore = useUser()
 
 const uploadUrl = import.meta.env.VITE_UPLOAD_URL
 const uploadToken = import.meta.env.VITE_UPLOAD_TOKEN
@@ -35,6 +36,7 @@ const tags = ref<ArticleTag[]>([])
 const categories = ref<ArticleCategory[]>([])
 const articleDialogVisible = ref<boolean>(false)
 const formInitial = () => ({
+  author_id: 0,
   title: '',
   content: '',
   description: '',
@@ -76,7 +78,7 @@ const initArticleOptions = async () => {
 // 输入内容时更新摘要
 const handleContentChange = (value: string) => {
   articleForm.content = value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  !value && (articleForm.description = value.replace(/\s/g, '').slice(0, 100))
+  articleForm.description = value.replace(/\s/g, '').slice(0, 100)
 }
 // 文章中的图片上传
 const handleUploadImg = async (
@@ -195,6 +197,7 @@ const handleSubmitArticle = async () => {
     })
   }
   articleForm.status = true
+  articleForm.author_id = userStore.user.id
   const article = toRaw(articleForm)
   const { code } =
     (saveOrEdit.value

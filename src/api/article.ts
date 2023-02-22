@@ -45,7 +45,7 @@ export const removeArticleById = (id: number) => {
 // 搜索文章
 export const searchArticle = (query?: QueryInfo) => {
   return request.get(
-    `/article/search?keyword=${query?.keyword || ''}&limit=${
+    `/article/search-all?keyword=${query?.keyword || ''}&limit=${
       query?.limit || 0
     }&skip=${query?.skip || 0}`
   )

@@ -52,9 +52,7 @@ const handleRemoveCategory = () => {
       v-if="!current"
     >
       <el-card shadow="never" class="border-0">
-        <template #header>
-          <span>请选择分类</span>
-        </template>
+        <span class="text-[18px] inline-block mb-5">请选择分类</span>
         <div class="flex gap-3 flex-wrap">
           <el-tag
             size="large"
