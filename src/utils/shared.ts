@@ -107,11 +107,12 @@ export const hasObjectChanged = (
   if (!origin || !target) return false
   if (Object.keys(origin).length !== Object.keys(target).length) return true
   let flag: boolean = false
+  const objType = ['object', 'array']
   for (const key in origin) {
     if (origin.hasOwnProperty(key)) {
       if (
-        getType(origin[key]) === 'object' &&
-        getType(target[key]) === 'object'
+        objType.includes(getType(origin[key])) &&
+        objType.includes(getType(target[key]))
       ) {
         flag = hasObjectChanged(origin[key], target[key])
       } else {

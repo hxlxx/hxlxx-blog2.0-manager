@@ -55,9 +55,13 @@ const articleForm = reactive<Article>(formInitial())
 const saveOrEdit = ref<boolean>()
 
 onBeforeMount(() => {
-  !route.params.id && Object.assign(articleForm, articleStore.reserve)
+  if (!route.params.id) {
+    Object.assign(articleForm, articleStore.reserve)
+    articleStore.setReserve(Object.assign({}, articleForm))
+  }
 })
 onBeforeRouteLeave(() => {
+  console.log(toRaw(articleStore.reserve), toRaw(articleForm))
   if (
     !route.params.id &&
     hasObjectChanged(toRaw(articleStore.reserve), toRaw(articleForm))
@@ -88,7 +92,6 @@ watch(
     if (newVal) {
       const article = articleStore.getArticle(newVal as string)
       Object.assign(articleForm, article)
-      console.log(articleForm)
     } else {
       Object.assign(articleForm, formInitial())
     }
