@@ -59,7 +59,7 @@ export const mergeAsyncRoutes = (
   if (role.role_name === 'admin') {
     // admin 角色直接渲染所有动态路由
     asyncRoutes.push({
-      path: '/:pathMatch(.*)*',
+      path: '/:catchError(.*)*',
       redirect: '/404'
     })
     return asyncRoutes
@@ -89,4 +89,38 @@ export const mergeAsyncRoutes = (
     })
     return visibleParentRoute
   }
+}
+
+export const getType = (target: any): string => {
+  if (typeof target === 'object') {
+    const typeStr = Object.prototype.toString.call(target).toLowerCase()
+    return typeStr.split(' ')[1].slice(0, -1)
+  } else {
+    return (typeof target).toLowerCase()
+  }
+}
+
+export const hasObjectChanged = (
+  origin: Record<string, any>,
+  target: Record<string, any>
+): boolean => {
+  if (!origin || !target) return false
+  if (Object.keys(origin).length !== Object.keys(target).length) return true
+  let flag: boolean = false
+  for (const key in origin) {
+    if (origin.hasOwnProperty(key)) {
+      if (
+        getType(origin[key]) === 'object' &&
+        getType(target[key]) === 'object'
+      ) {
+        flag = hasObjectChanged(origin[key], target[key])
+      } else {
+        if (origin[key] !== target[key]) {
+          flag = true
+          break
+        }
+      }
+    }
+  }
+  return flag
 }

@@ -1,4 +1,5 @@
 export type SiteConfig = {
+  id?: number
   author?: string
   author_avatar?: string
   author_email?: string
@@ -11,4 +12,5 @@ export type SiteConfig = {
   logo?: string
   notice?: string
   webSite_created_at?: Date
+  default_avatar?: string
 }

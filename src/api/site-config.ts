@@ -7,3 +7,6 @@ export const getSiteConfig = () => {
 export const updateSiteConfig = (options: AxiosRequestConfig) => {
   return request.patch('/site/config', options)
 }
+export const updateUserDefaultAvatar = (options: AxiosRequestConfig) => {
+  return request.patch('/site/default-avatar', options)
+}

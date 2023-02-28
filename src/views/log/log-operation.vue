@@ -123,8 +123,8 @@ const handleCurrentChange = () => {
     >
       <el-table-column type="selection" width="50" />
       <el-table-column label="操作用户" prop="username" />
-      <el-table-column label="用户IP" prop="ip" width="100px" />
-      <el-table-column label="用户地址" prop="address" />
+      <el-table-column label="用户IP" prop="ip" width="160px" />
+      <el-table-column label="归属地" prop="address" />
       <el-table-column label="操作路径">
         <template #default="{ row }">
           <el-tag color="var(--primary-bg-color)" size="large">

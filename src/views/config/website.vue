@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { authorization, getSiteConfig, updateSiteConfig } from '@/api'
+import {
+  authorization,
+  getSiteConfig,
+  updateSiteConfig,
+  updateUserDefaultAvatar
+} from '@/api'
 import { useUser } from '@/stores'
 import type { SiteConfig } from '@/types'
 import { Confirm, Message } from '@/utils'
@@ -10,9 +15,6 @@ const userStore = useUser()
 const uploadUrl = import.meta.env.VITE_UPLOAD_URL
 const uploadToken = import.meta.env.VITE_UPLOAD_TOKEN
 const imgBaseUrl = import.meta.env.VITE_IMG_BASE_URL
-const staticUrl = import.meta.env.VITE_SERVER_URL + '/static'
-const defaultAvatarUrl = ref<string>(staticUrl + '/default_avatar.jpg')
-const defaultCover = ref<string>(staticUrl + '/default_cover.jpg')
 const config = reactive<SiteConfig>({})
 const activeName = ref<string>('site-info')
 
@@ -62,24 +64,24 @@ const handleLogoSuccess: UploadProps['onSuccess'] = (response: any) => {
   }
 }
 // 图片上传成功，更新默认头像
-const handleDefaultAvatarSuccess: UploadProps['onSuccess'] = (
+const handleDefaultAvatarSuccess: UploadProps['onSuccess'] = async (
   response: any
 ) => {
-  defaultAvatarUrl.value = response.data
-  if (!defaultAvatarUrl.value) {
+  config.default_avatar = imgBaseUrl + response.hash
+  if (!config.default_avatar) {
     return Message({
       type: 'error',
       message: '图片上传错误，请重新上传！'
     })
   }
-}
-// 图片上传成功，更新默认文章封面
-const handleDefaultCoverSuccess: UploadProps['onSuccess'] = (response: any) => {
-  defaultAvatarUrl.value = response.data
-  if (!defaultAvatarUrl.value) {
-    return Message({
-      type: 'error',
-      message: '图片上传错误，请重新上传！'
+  const { code } =
+    (await updateUserDefaultAvatar({
+      data: { id: config.id, default_avatar: config.default_avatar }
+    })) || {}
+  if (code === 200) {
+    Message({
+      type: 'success',
+      message: '更新用户默认头像成功！'
     })
   }
 }
@@ -208,42 +210,16 @@ const handleSubmitConfig = () => {
             <span>用户默认头像</span>
             <el-upload
               class="avatar-uploader"
-              :action="staticUrl"
-              :headers="{ authorization: userStore.token }"
-              :data="{ imgType: 'avatar' }"
+              :action="uploadUrl"
+              :data="{ token: uploadToken }"
               :show-file-list="false"
               :before-upload="handleBeforeUpload"
               :on-success="handleDefaultAvatarSuccess"
             >
               <el-image
-                v-if="defaultAvatarUrl"
+                v-if="config.default_avatar"
                 style="width: 160px; height: 160px"
-                :src="defaultAvatarUrl"
-                fit="cover"
-              />
-              <h-icon
-                v-else
-                class="justify-center items-center w-[160px] h-[160px]"
-                icon="plus"
-                size="28px"
-              />
-            </el-upload>
-          </div>
-          <div class="flex flex-col items-center gap-5">
-            <span>文章默认封面</span>
-            <el-upload
-              class="avatar-uploader"
-              :action="staticUrl"
-              :headers="{ authorization: userStore.token }"
-              :data="{ imgType: 'cover' }"
-              :show-file-list="false"
-              :before-upload="handleBeforeUpload"
-              :on-success="handleDefaultCoverSuccess"
-            >
-              <el-image
-                v-if="defaultCover"
-                style="width: 160px; height: 160px"
-                :src="defaultCover"
+                :src="config.default_avatar"
                 fit="cover"
               />
               <h-icon

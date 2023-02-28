@@ -4,7 +4,8 @@ import { defineStore } from 'pinia'
 
 export const useArticle = defineStore('article', {
   state: (): ArticleState => ({
-    articleMap: {}
+    articleMap: {},
+    reserve: {} as Article
   }),
   actions: {
     setArticle(id: string, article: Article) {
@@ -12,6 +13,9 @@ export const useArticle = defineStore('article', {
     },
     getArticle(id: string) {
       return this.articleMap[id]
+    },
+    setReserve(reserve: Article) {
+      this.reserve = reserve
     },
     clearArticle() {
       this.articleMap = {}

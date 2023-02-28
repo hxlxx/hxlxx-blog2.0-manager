@@ -120,7 +120,7 @@ const handleChangePage = () => {
         </template>
       </el-table-column>
       <el-table-column label="ip" prop="ip" width="160px" />
-      <el-table-column label="地址" prop="address" />
+      <el-table-column label="归属地" prop="address" />
       <el-table-column label="用户状态" width="150px">
         <template #default="{ row }">
           <el-switch
@@ -149,7 +149,10 @@ const handleChangePage = () => {
           <el-input disabled v-model="userForm.username" />
         </el-form-item>
         <el-form-item label="角色">
-          <el-radio-group v-model="userForm.role_id">
+          <el-radio-group
+            :disabled="userForm.id === 1"
+            v-model="userForm.role_id"
+          >
             <el-radio v-for="role in roleList" :key="role.id" :label="role.id">
               {{ role.role_name }}
             </el-radio>

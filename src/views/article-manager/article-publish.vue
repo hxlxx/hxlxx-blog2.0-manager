@@ -7,7 +7,7 @@ import {
   type ArticleTag,
   type ArticleCategory
 } from '@/types'
-import { Message } from '@/utils'
+import { Confirm, hasObjectChanged, Message } from '@/utils'
 import {
   createArticle,
   updateArticle,
@@ -54,6 +54,33 @@ const formInitial = () => ({
 const articleForm = reactive<Article>(formInitial())
 const saveOrEdit = ref<boolean>()
 
+onBeforeMount(() => {
+  !route.params.id && Object.assign(articleForm, articleStore.reserve)
+})
+onBeforeRouteLeave(() => {
+  if (
+    !route.params.id &&
+    hasObjectChanged(toRaw(articleStore.reserve), toRaw(articleForm))
+  ) {
+    Confirm('你有未保存的内容，是否暂存？', '提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消'
+    })
+      .then(() => {
+        articleStore.setReserve(articleForm)
+        Message({
+          type: 'success',
+          message: '暂存成功'
+        })
+      })
+      .catch(() => {
+        Message({
+          type: 'warning',
+          message: '已取消暂存'
+        })
+      })
+  }
+})
 watch(
   () => route.params.id,
   (newVal) => {
@@ -61,6 +88,7 @@ watch(
     if (newVal) {
       const article = articleStore.getArticle(newVal as string)
       Object.assign(articleForm, article)
+      console.log(articleForm)
     } else {
       Object.assign(articleForm, formInitial())
     }
@@ -123,12 +151,6 @@ const handlePublishArticle = () => {
   }
   initArticleOptions()
   articleDialogVisible.value = true
-}
-// 打开对话框
-const handleOpenDialog = () => {
-  articleForm.description = articleForm.description
-    ? articleForm.description
-    : articleForm.content.slice(0, 100)
 }
 // 更新完文章后清理路由
 const clearRoute = () => {
@@ -208,6 +230,7 @@ const handleSubmitArticle = async () => {
       type: 'success',
       message: saveOrEdit.value ? '发布成功！' : '更新成功！'
     })
+    articleStore.reserve = {} as Article
     clearRoute()
     handleResetForm()
   }
@@ -231,6 +254,7 @@ const handleSaveOrUpdateAsDraft = async () => {
       type: 'success',
       message: '保存草稿成功！'
     })
+    articleStore.reserve = {} as Article
     clearRoute()
     handleResetForm()
   }
@@ -275,7 +299,6 @@ const handleResetForm = () => {
       align-center
       destroy-on-close
       v-model="articleDialogVisible"
-      @open="handleOpenDialog"
     >
       <el-form :model="articleForm" label-width="80px">
         <el-form-item label="文章分类">

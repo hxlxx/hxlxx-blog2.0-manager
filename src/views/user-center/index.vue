@@ -183,7 +183,7 @@ const handleSubmitPassword = () => {
       <el-form-item label="邮箱">
         <el-input v-model="user.email" disabled />
       </el-form-item>
-      <el-form-item label="地址">
+      <el-form-item label="归属地">
         <el-input v-model="user.address" disabled />
       </el-form-item>
       <el-form-item label="角色">
