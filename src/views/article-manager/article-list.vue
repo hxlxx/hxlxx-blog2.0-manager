@@ -117,6 +117,7 @@ const handleChangeRecommend = async (recommend: boolean, id: number) => {
 // 搜索文章
 const handleSearchArticle = async () => {
   loading.value = true
+  articleStatus.value = '' as any
   const { data } = (await searchArticle(query)) || {}
   articleList.value = data?.res
   query.total = data?.count
@@ -195,7 +196,7 @@ const handleSearchArticle = async () => {
             <el-tag
               class="mr-3"
               type="success"
-              v-for="tag in row.tags"
+              v-for="tag in (row.tags as any[])"
               :key="tag.id"
             >
               {{ tag.tag_name }}

@@ -105,10 +105,12 @@ export const hasObjectChanged = (
   target: Record<string, any>
 ): boolean => {
   if (!origin || !target) return false
+  if (getType(origin) !== getType(target)) return true
   if (Object.keys(origin).length !== Object.keys(target).length) return true
   let flag: boolean = false
   const objType = ['object', 'array']
   for (const key in origin) {
+    if (flag) return true
     if (origin.hasOwnProperty(key)) {
       if (
         objType.includes(getType(origin[key])) &&
@@ -117,8 +119,7 @@ export const hasObjectChanged = (
         flag = hasObjectChanged(origin[key], target[key])
       } else {
         if (origin[key] !== target[key]) {
-          flag = true
-          break
+          return true
         }
       }
     }

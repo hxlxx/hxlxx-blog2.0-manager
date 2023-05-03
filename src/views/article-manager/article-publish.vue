@@ -35,7 +35,7 @@ const imgBaseUrl = import.meta.env.VITE_IMG_BASE_URL
 const tags = ref<ArticleTag[]>([])
 const categories = ref<ArticleCategory[]>([])
 const articleDialogVisible = ref<boolean>(false)
-const formInitial = () => ({
+const formInitial = (): Article => ({
   author_id: 0,
   title: '',
   content: '',
@@ -57,11 +57,10 @@ const saveOrEdit = ref<boolean>()
 onBeforeMount(() => {
   if (!route.params.id) {
     Object.assign(articleForm, articleStore.reserve)
-    articleStore.setReserve(Object.assign({}, articleForm))
+    articleStore.setReserve({ ...articleForm })
   }
 })
 onBeforeRouteLeave(() => {
-  console.log(toRaw(articleStore.reserve), toRaw(articleForm))
   if (
     !route.params.id &&
     hasObjectChanged(toRaw(articleStore.reserve), toRaw(articleForm))
@@ -108,7 +107,7 @@ const initArticleOptions = async () => {
 }
 // 输入内容时更新摘要
 const handleContentChange = (value: string) => {
-  articleForm.content = value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  // articleForm.content = value.replace(/</g, '&lt;').replace(/>/g, '&gt;')
   articleForm.description = value.replace(/\s/g, '').slice(0, 100)
 }
 // 文章中的图片上传
@@ -233,7 +232,7 @@ const handleSubmitArticle = async () => {
       type: 'success',
       message: saveOrEdit.value ? '发布成功！' : '更新成功！'
     })
-    articleStore.reserve = {} as Article
+    articleStore.reserve = formInitial()
     clearRoute()
     handleResetForm()
   }
@@ -247,6 +246,7 @@ const handleSaveOrUpdateAsDraft = async () => {
       message: '草稿请至少填写标题！'
     })
   }
+  articleForm.author_id = userStore.user.id
   const article = toRaw(articleForm)
   const { code } =
     (saveOrEdit.value
@@ -257,7 +257,7 @@ const handleSaveOrUpdateAsDraft = async () => {
       type: 'success',
       message: '保存草稿成功！'
     })
-    articleStore.reserve = {} as Article
+    articleStore.reserve = formInitial()
     clearRoute()
     handleResetForm()
   }

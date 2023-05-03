@@ -124,6 +124,7 @@ const handleChangePage = () => {
       <el-table-column label="用户状态" width="150px">
         <template #default="{ row }">
           <el-switch
+            :disabled="row.id === 1"
             v-model="row.status"
             @change="(value: boolean) => handleChangeUserStatus(value, row.id)"
           />

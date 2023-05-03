@@ -122,7 +122,7 @@ const handleSubmitPassword = () => {
     if (valid) {
       const { code } =
         (await resetPassword({
-          data: { id: user.id, ...pwdForm }
+          data: { email: user.email, ...pwdForm }
         })) || {}
       if (code === 200) {
         Message({
